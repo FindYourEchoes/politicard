@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #F4F1EA;
+    color: #1A1A1A;
+    background-image: radial-gradient(rgba(26, 26, 26, 0.05) 1px, transparent 0);
+    background-size: 16px 16px;
+  }
+}
+
+/* Règles obligatoires pour <dialog> modal (Modern Web Guidance) */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background-color: rgba(26, 26, 26, 0.65);
+  backdrop-filter: blur(2px);
+}
+
+/* Suppression de la sélection de texte pendant le glisser-déposer (Modern Web Guidance - drag) */
+.draggable-card {
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.draggable-card:active {
+  cursor: grabbing;
+}
