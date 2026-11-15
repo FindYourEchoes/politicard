@@ -249,7 +249,7 @@ export const CardComponent: React.FC<CardComponentProps> = ({
 
     return (
       <div
-        className="relative w-full h-full min-h-[104px] select-none"
+        className="relative w-full h-full min-h-[72px] md:min-h-[104px] select-none"
         draggable={canRecallFigure}
         onDragStart={(e) => {
           if (canRecallFigure) {
@@ -355,7 +355,7 @@ export const CardComponent: React.FC<CardComponentProps> = ({
               ? 'Glissez vers votre main ou un autre Terrain • Clic droit pour reprendre en main'
               : undefined
           }
-          className={`relative w-full h-full min-h-[104px] p-1.5 border-2 flex flex-col items-center justify-between transition-colors ${
+          className={`relative w-full h-full min-h-[72px] md:min-h-[104px] p-1 md:p-1.5 border-2 flex flex-col items-center justify-between transition-colors ${
             isEliminated
               ? 'bg-crimson/25 border-crimson ring-2 ring-crimson'
               : isTargetable || isDragOverFigure
@@ -369,9 +369,9 @@ export const CardComponent: React.FC<CardComponentProps> = ({
         >
           {/* Pastille de camp / badge "NOUVEAU" en haut à gauche + Upgrades équipés en haut à droite */}
           <div className="w-full flex items-center justify-between gap-1">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5 md:gap-1">
               <span
-                className={`text-[8px] font-mono font-extrabold px-1 py-0.2 border border-ink ${
+                className={`text-[7px] md:text-[8px] font-mono font-extrabold px-1 py-0.2 border border-ink ${
                   card.owner === 'PLAYER'
                     ? 'bg-royal text-white'
                     : 'bg-crimson text-white'
@@ -380,14 +380,14 @@ export const CardComponent: React.FC<CardComponentProps> = ({
                 {card.owner === 'PLAYER' ? 'VOUS' : 'IA'}
               </span>
               {isNewlyPlaced && card.owner === 'PLAYER' && (
-                <span className="bg-amber-600 text-white px-1 py-0.2 text-[7px] font-mono font-black uppercase border border-ink">
+                <span className="bg-amber-600 text-white px-1 py-0.2 text-[6px] md:text-[7px] font-mono font-black uppercase border border-ink">
                   NOUVEAU
                 </span>
               )}
             </div>
 
             {card.upgrades.length > 0 && (
-              <span className="bg-gold text-white px-1 py-0.2 text-[8px] font-mono font-black border border-ink flex items-center gap-0.5 shadow-press-sm">
+              <span className="bg-gold text-white px-1 py-0.2 text-[7px] md:text-[8px] font-mono font-black border border-ink flex items-center gap-0.5 shadow-press-sm">
                 <Sparkles className="w-2.5 h-2.5" />+{card.upgrades.length}
               </span>
             )}
@@ -395,48 +395,48 @@ export const CardComponent: React.FC<CardComponentProps> = ({
 
           {/* Grande Illustration / Icône gravure de presse */}
           <div
-            className="w-9 h-9 my-0.5 bg-paper-dark border-2 border-ink flex items-center justify-center relative shadow-press-sm shrink-0"
+            className="w-7 h-7 md:w-9 md:h-9 my-0.5 bg-paper-dark border-2 border-ink flex items-center justify-center relative shadow-press-sm shrink-0"
             style={{
               backgroundImage:
                 'radial-gradient(#1A1A1A 0.6px, transparent 0.6px)',
               backgroundSize: '4px 4px',
             }}
           >
-            <div className="bg-paper-light/95 p-1 border border-ink/50">
-              <IconComponent className="w-4 h-4 text-ink" />
+            <div className="bg-paper-light/95 p-0.5 md:p-1 border border-ink/50">
+              <IconComponent className="w-3.5 h-3.5 md:w-4 md:h-4 text-ink" />
             </div>
           </div>
 
           {/* Nom court centré */}
-          <div className="w-full text-center px-0.5 mb-0.5">
-            <h4 className="font-serif font-black text-[11px] text-ink leading-tight truncate">
+          <div className="w-full text-center px-0.5">
+            <h4 className="font-serif font-black text-[10px] md:text-[11px] text-ink leading-tight truncate">
               {card.name}
             </h4>
           </div>
 
           {/* Deux gros badges très lisibles en bas : Charisme (Orange) & Crédibilité (Bleu/Rouge) */}
-          <div className="w-full flex items-center justify-between gap-1 pt-1 border-t border-ink/25">
+          <div className="w-full flex items-center justify-between gap-1 pt-0.5 md:pt-1 border-t border-ink/25">
             <div
-              className={`flex items-center justify-center gap-0.5 px-1.5 py-0.5 border-2 border-ink font-mono font-black text-xs shadow-press-sm ${
+              className={`flex items-center justify-center gap-0.5 px-1 md:px-1.5 py-0.2 md:py-0.5 border border-ink font-mono font-black text-[10px] md:text-xs shadow-press-sm ${
                 isBuffedCharisma
                   ? 'bg-amber-500 text-white ring-1 ring-gold'
                   : 'bg-gold text-white'
               }`}
               title="Charisme (Force d'attaque)"
             >
-              <Megaphone className="w-3 h-3 shrink-0" />
+              <Megaphone className="w-2.5 h-2.5 md:w-3 md:h-3 shrink-0" />
               <span>{effectiveCharisma}</span>
             </div>
 
             <div
-              className={`flex items-center justify-center gap-0.5 px-1.5 py-0.5 border-2 border-ink font-mono font-black text-xs shadow-press-sm ${
+              className={`flex items-center justify-center gap-0.5 px-1 md:px-1.5 py-0.2 md:py-0.5 border border-ink font-mono font-black text-[10px] md:text-xs shadow-press-sm ${
                 isDamaged || isEliminated
                   ? 'bg-crimson text-white'
                   : 'bg-royal text-white'
               }`}
               title="Crédibilité (Points de vie)"
             >
-              <Heart className="w-3 h-3 shrink-0" />
+              <Heart className="w-2.5 h-2.5 md:w-3 md:h-3 shrink-0" />
               <span>{Math.max(0, card.credibility)}</span>
             </div>
           </div>
@@ -447,7 +447,7 @@ export const CardComponent: React.FC<CardComponentProps> = ({
 
   // =========================================================================
   // MODE CARTE EN MAIN ULTRA-ÉPURÉ (inHand = true)
-  // Uniquement : Coût, Grande zone d'illustration, Nom de la carte, et 2 gros badges de stats !
+  // Format compact sur mobile (w-24 h-32) pour réduire la hauteur de 35 % !
   // =========================================================================
   return (
     <div
@@ -472,16 +472,16 @@ export const CardComponent: React.FC<CardComponentProps> = ({
     >
       <motion.div
         layout={!isDraggingSelf}
-        initial={{ opacity: 0, y: 18, scale: 0.94 }}
+        initial={{ opacity: 0, y: 12, scale: 0.94 }}
         animate={{
           opacity: inHand && !isPlayable ? 0.45 : 1,
-          y: isDraggingSelf ? 0 : isSelected ? -14 : fanY,
-          rotate: isDraggingSelf ? 0 : isSelected ? 0 : fanRotate,
-          scale: isDraggingSelf ? 1 : isSelected ? 1.06 : 1,
+          y: isDraggingSelf ? 0 : isSelected ? -8 : fanY * 0.5,
+          rotate: isDraggingSelf ? 0 : isSelected ? 0 : fanRotate * 0.5,
+          scale: isDraggingSelf ? 1 : isSelected ? 1.04 : 1,
         }}
         whileHover={
           inHand && isPlayable && !isDraggingSelf
-            ? { y: -12, rotate: 0, scale: 1.04, zIndex: 30 }
+            ? { y: -8, rotate: 0, scale: 1.03, zIndex: 30 }
             : undefined
         }
         transition={{ type: 'spring', stiffness: 320, damping: 24 }}
@@ -490,7 +490,7 @@ export const CardComponent: React.FC<CardComponentProps> = ({
           isSelected
             ? 'border-emerald-600 ring-4 ring-emerald-500/60 shadow-press z-20'
             : typeMeta.borderAccent
-        } w-28 sm:w-32 md:w-36 p-2 flex flex-col justify-between shadow-press transition-all ${
+        } w-24 h-32 md:w-36 md:h-auto p-1.5 md:p-2 flex flex-col justify-between shadow-press transition-all ${
           inHand && isPlayable
             ? 'draggable-card'
             : inHand && !isPlayable
@@ -499,9 +499,9 @@ export const CardComponent: React.FC<CardComponentProps> = ({
         }`}
       >
         {/* 1. En-tête : Coût en Capital + Badge Type court */}
-        <div className="flex items-center justify-between gap-1">
+        <div className="flex items-center justify-between gap-1 shrink-0">
           <span
-            className={`w-6 h-6 text-xs ${
+            className={`w-5 h-5 md:w-6 md:h-6 text-[10px] md:text-xs ${
               isPlayable ? 'bg-gold text-white' : 'bg-ink-faint text-paper'
             } border-2 border-ink font-mono font-black flex items-center justify-center shadow-press-sm shrink-0`}
             title={`Coût : ${card.cost} Capital Politique`}
@@ -509,7 +509,7 @@ export const CardComponent: React.FC<CardComponentProps> = ({
             {card.cost}
           </span>
           <span
-            className={`text-[8px] px-1.5 py-0.5 font-mono font-extrabold uppercase truncate ${typeMeta.badgeBg}`}
+            className={`text-[7px] md:text-[8px] px-1 md:px-1.5 py-0.5 font-mono font-extrabold uppercase truncate ${typeMeta.badgeBg}`}
           >
             {typeMeta.label}
           </span>
@@ -517,33 +517,33 @@ export const CardComponent: React.FC<CardComponentProps> = ({
 
         {/* 2. Grande Zone d'Illustration centrée */}
         <div
-          className="w-full h-12 sm:h-14 my-1.5 bg-paper-dark border-2 border-ink flex items-center justify-center relative overflow-hidden shadow-press-sm"
+          className="w-full h-9 md:h-14 my-0.5 md:my-1.5 bg-paper-dark border-2 border-ink flex items-center justify-center relative overflow-hidden shadow-press-sm shrink-0"
           style={{
             backgroundImage:
               'radial-gradient(#1A1A1A 0.6px, transparent 0.6px)',
             backgroundSize: '4px 4px',
           }}
         >
-          <div className="bg-paper-light/95 p-1.5 border border-ink/50 shadow-press-sm">
-            <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 text-ink" />
+          <div className="bg-paper-light/95 p-1 md:p-1.5 border border-ink/50 shadow-press-sm">
+            <IconComponent className="w-4 h-4 md:w-7 md:h-7 text-ink" />
           </div>
         </div>
 
         {/* 3. Nom de la carte (sans sous-titre ni pavé de texte) */}
-        <div className="min-h-[2rem] flex items-center justify-center text-center px-0.5 mb-1.5">
-          <h4 className="font-serif font-black text-[11px] sm:text-xs leading-tight text-ink line-clamp-2">
+        <div className="min-h-[1.5rem] md:min-h-[2rem] flex items-center justify-center text-center px-0.5 mb-0.5 md:mb-1.5">
+          <h4 className="font-serif font-black text-[10px] md:text-xs leading-tight text-ink line-clamp-2">
             {card.name}
           </h4>
         </div>
 
         {/* 4. Deux gros badges de stats en bas (Charisme Orange / Crédibilité Bleu) */}
         {card.type === 'FIGURE' || card.type === 'UPGRADE' ? (
-          <div className="flex items-center justify-between gap-1 pt-1 border-t border-ink/30 font-mono font-black text-xs">
+          <div className="flex items-center justify-between gap-1 pt-0.5 md:pt-1 border-t border-ink/30 font-mono font-black text-[10px] md:text-xs shrink-0">
             <div
-              className="flex items-center gap-0.5 px-1.5 py-0.5 bg-gold text-white border-2 border-ink shadow-press-sm"
+              className="flex items-center gap-0.5 px-1 md:px-1.5 py-0.2 md:py-0.5 bg-gold text-white border border-ink shadow-press-sm"
               title="Charisme (Force d'attaque)"
             >
-              <Megaphone className="w-3 h-3 shrink-0" />
+              <Megaphone className="w-2.5 h-2.5 md:w-3 md:h-3 shrink-0" />
               <span>
                 {card.type === 'UPGRADE' && effectiveCharisma >= 0
                   ? `+${effectiveCharisma}`
@@ -552,14 +552,14 @@ export const CardComponent: React.FC<CardComponentProps> = ({
             </div>
 
             <div
-              className={`flex items-center gap-0.5 px-1.5 py-0.5 border-2 border-ink shadow-press-sm ${
+              className={`flex items-center gap-0.5 px-1 md:px-1.5 py-0.2 md:py-0.5 border border-ink shadow-press-sm ${
                 card.credibility < 0
                   ? 'bg-crimson text-white'
                   : 'bg-royal text-white'
               }`}
               title="Crédibilité (Points de vie)"
             >
-              <Heart className="w-3 h-3 shrink-0" />
+              <Heart className="w-2.5 h-2.5 md:w-3 md:h-3 shrink-0" />
               <span>
                 {card.type === 'UPGRADE' && card.credibility >= 0
                   ? `+${card.credibility}`
@@ -568,9 +568,9 @@ export const CardComponent: React.FC<CardComponentProps> = ({
             </div>
           </div>
         ) : (
-          <div className="pt-1 border-t border-ink/30">
+          <div className="pt-0.5 md:pt-1 border-t border-ink/30 shrink-0">
             <div
-              className={`w-full py-0.5 text-center font-mono font-black text-[9px] uppercase border border-ink ${
+              className={`w-full py-0.2 md:py-0.5 text-center font-mono font-black text-[8px] md:text-[9px] uppercase border border-ink ${
                 card.type === 'EVENT'
                   ? 'bg-gold/25 text-ink'
                   : 'bg-crimson/15 text-crimson'

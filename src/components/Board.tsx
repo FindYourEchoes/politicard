@@ -795,7 +795,7 @@ export const Board: React.FC = () => {
     .join(' | ');
 
   return (
-    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-paper text-ink flex flex-col justify-between px-3 py-2 md:px-5 md:py-2.5 max-w-[1680px] mx-auto select-none relative">
+    <div className="h-[100dvh] w-full max-w-[1680px] overflow-hidden bg-paper text-ink flex flex-col justify-between px-2 py-1.5 md:px-5 md:py-2.5 mx-auto select-none relative">
       {/* =====================================================================
           FLASH VISUEL CENTRAL LORSQU'UNE CASSEROLE (PIÈGE) SE DÉCLENCHE (1,5s)
       ===================================================================== */}
@@ -830,20 +830,21 @@ export const Board: React.FC = () => {
       </AnimatePresence>
 
       {/* =====================================================================
-          1. EN-TÊTE MINIMALISTE : LOGO + SCORE TERRAINS | JAUGE D'OPINION | ☰ MENU
+          1. EN-TÊTE MINIMALISTE (2 LIGNES COMPACTES SUR MOBILE, 1 LIGNE SUR DESKTOP)
       ===================================================================== */}
-      <header className="border-b-2 border-ink pb-1.5 mb-1.5 shrink-0">
-        <div className="flex items-center justify-between gap-2 md:gap-4">
+      <header className="w-full max-w-full border-b-2 border-ink pb-1.5 mb-1 md:mb-1.5 shrink-0">
+        {/* Ligne 1 : Logo court POLITICARD + Score Vous 0 - 0 IA + Bouton ☰ Menu à droite */}
+        <div className="flex items-center justify-between gap-1.5 md:gap-4 w-full min-w-0">
           {/* À gauche : Logo POLITICARD compact + Score des Terrains */}
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="w-7 h-7 bg-ink text-paper flex items-center justify-center border border-ink shadow-press-sm">
-              <Newspaper className="w-4 h-4 text-gold" />
+          <div className="flex items-center gap-1.5 md:gap-2 min-w-0 shrink">
+            <div className="w-6 h-6 md:w-7 md:h-7 bg-ink text-paper flex items-center justify-center border border-ink shadow-press-sm shrink-0">
+              <Newspaper className="w-3.5 h-3.5 md:w-4 md:h-4 text-gold" />
             </div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-serif font-black text-base md:text-xl tracking-tight uppercase leading-none text-ink">
+            <div className="flex items-center gap-1.5 md:gap-2 min-w-0">
+              <h1 className="font-serif font-black text-sm sm:text-base md:text-xl tracking-tight uppercase leading-none text-ink shrink-0">
                 POLITICARD
               </h1>
-              <div className="bg-paper-light border border-ink px-2 py-0.5 font-mono font-extrabold text-[10px] md:text-xs whitespace-nowrap shadow-press-sm">
+              <div className="bg-paper-light border border-ink px-1.5 py-0.5 font-mono font-extrabold text-[10px] md:text-xs whitespace-nowrap shadow-press-sm shrink-0">
                 <span className="text-royal">Vous {playerLanesDominated}</span>
                 <span className="text-ink-muted mx-1">-</span>
                 <span className="text-crimson">{aiLanesDominated} IA</span>
@@ -851,8 +852,8 @@ export const Board: React.FC = () => {
             </div>
           </div>
 
-          {/* Au centre : Jauge d'Opinion Publique intégrée directement dans l'en-tête */}
-          <div className="flex-1 flex justify-center min-w-[130px] max-w-xl">
+          {/* Au centre sur Desktop (>= 768px) : Jauge d'Opinion Publique */}
+          <div className="hidden md:flex flex-1 justify-center min-w-0 max-w-xl">
             <OpinionGauge
               opinion={gameState.opinion}
               stakesMultiplier={gameState.stakesMultiplier}
@@ -860,16 +861,16 @@ export const Board: React.FC = () => {
             />
           </div>
 
-          {/* À droite : Bouton unique ☰ Menu avec menu déroulant propre */}
+          {/* À droite : Bouton unique ☰ Menu jamais coupé */}
           <div ref={menuContainerRef} className="relative shrink-0">
             <button
               type="button"
               onClick={() => setIsMenuOpen((prev) => !prev)}
               aria-expanded={isMenuOpen}
               aria-haspopup="menu"
-              className="px-2.5 py-1 bg-paper-light hover:bg-paper-dark text-ink border-2 border-ink font-mono font-extrabold text-xs uppercase shadow-press-sm flex items-center gap-1.5 cursor-pointer"
+              className="px-2 py-1 md:px-2.5 bg-paper-light hover:bg-paper-dark text-ink border-2 border-ink font-mono font-extrabold text-[11px] md:text-xs uppercase shadow-press-sm flex items-center gap-1 cursor-pointer whitespace-nowrap"
             >
-              <Menu className="w-4 h-4" />
+              <Menu className="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0" />
               <span>Menu</span>
               {currentTurnLogsCount > 0 && (
                 <span className="px-1 py-0.2 bg-crimson text-white text-[9px] font-black border border-ink">
@@ -967,22 +968,31 @@ export const Board: React.FC = () => {
             </AnimatePresence>
           </div>
         </div>
+
+        {/* Ligne 2 sur Mobile (< 768px) : Jauge d'Opinion Publique sur 100 % de la largeur */}
+        <div className="mt-1 w-full md:hidden">
+          <OpinionGauge
+            opinion={gameState.opinion}
+            stakesMultiplier={gameState.stakesMultiplier}
+            pressCalledBy={gameState.pressCalledBy}
+          />
+        </div>
       </header>
 
       {/* =====================================================================
-          ONGLETS RAPIDES MOBILE (< 768px) : JT 20h | Hémicycle | La Rue
+          ONGLETS RAPIDES MOBILE (< 768px) : JT 20H | HÉMICYCLE | LA RUE
       ===================================================================== */}
       <nav
         aria-label="Terrains de campagne"
-        className="flex md:hidden items-center gap-1.5 mb-1.5 shrink-0"
+        className="flex md:hidden items-center gap-1 mb-1 shrink-0 w-full"
       >
         {gameState.lanes.map((lane) => {
           const shortTitle =
             lane.id === 'lane-jt-20h'
-              ? 'JT 20h'
-              : lane.id === 'lane-assemblee'
-              ? 'Hémicycle'
-              : 'La Rue';
+              ? 'JT 20H'
+              : lane.id === 'lane-hemicycle'
+              ? 'HÉMICYCLE'
+              : 'LA RUE';
           const pScore = getLaneTotalCharisma(lane, 'PLAYER', gameState.lanes);
           const aScore = getLaneTotalCharisma(lane, 'AI', gameState.lanes);
           const isCurrent = activeMobileLaneId === lane.id;
@@ -1000,7 +1010,7 @@ export const Board: React.FC = () => {
                   block: 'nearest',
                 });
               }}
-              className={`flex-1 py-1 px-2 border-2 border-ink font-mono text-[11px] font-black uppercase flex items-center justify-between transition-colors cursor-pointer ${
+              className={`flex-1 min-w-0 py-1 px-1.5 border-2 border-ink font-mono text-[10px] font-black uppercase flex items-center justify-between transition-colors cursor-pointer ${
                 isCurrent
                   ? 'bg-ink text-paper shadow-press-sm'
                   : 'bg-paper-light text-ink opacity-80'
@@ -1008,7 +1018,7 @@ export const Board: React.FC = () => {
             >
               <span className="truncate">{shortTitle}</span>
               <span
-                className={`ml-1 px-1 py-0.2 text-[10px] border border-current ${
+                className={`ml-1 px-1 py-0.2 text-[9px] border border-current shrink-0 ${
                   pScore > aScore
                     ? 'bg-royal text-white'
                     : aScore > pScore
@@ -1027,7 +1037,11 @@ export const Board: React.FC = () => {
           BANDEAU FIN CONTEXTUEL OU FLASH AFP (3 SECONDES)
       ===================================================================== */}
       {(selectedCard || statusBanner || (showFlashInfo && latestLog)) && (
-        <div className="h-6 mb-1.5 shrink-0 flex items-center">
+        <div
+          className={`h-5 md:h-6 mb-1 md:mb-1.5 shrink-0 items-center ${
+            selectedCard || statusBanner ? 'flex' : 'hidden md:flex'
+          }`}
+        >
           <AnimatePresence mode="wait">
             {selectedCard || statusBanner ? (
               <motion.div
@@ -1035,18 +1049,18 @@ export const Board: React.FC = () => {
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                className="w-full h-full px-2.5 bg-emerald-500/20 border border-emerald-700 flex items-center justify-between text-[11px] font-mono"
+                className="w-full h-full px-2 bg-emerald-500/20 border border-emerald-700 flex items-center justify-between text-[10px] md:text-[11px] font-mono min-w-0"
               >
-                <div className="flex items-center gap-1.5 font-bold text-ink truncate">
+                <div className="flex items-center gap-1.5 font-bold text-ink truncate min-w-0">
                   <Sparkles className="w-3 h-3 text-emerald-700 shrink-0" />
                   {selectedCard ? (
                     <span className="truncate">
-                      Carte prête : <strong>{selectedCard.name}</strong> —{' '}
+                      <strong>{selectedCard.name}</strong> —{' '}
                       {selectedCard.type === 'UPGRADE'
-                        ? 'Cliquez sur une de vos Figures illuminées en vert.'
+                        ? 'Touchez une Figure verte.'
                         : selectedCard.type === 'TRAP'
-                        ? 'Cliquez sur un Terrain adverse illuminé en rouge.'
-                        : 'Cliquez sur une case libre illuminée en vert.'}
+                        ? 'Touchez un Terrain rouge.'
+                        : 'Touchez une case verte.'}
                     </span>
                   ) : (
                     <span className="truncate">{statusBanner}</span>
@@ -1056,7 +1070,7 @@ export const Board: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setSelectedCardId(null)}
-                    className="px-1.5 py-0.2 bg-paper-light border border-ink text-[10px] font-bold uppercase hover:bg-paper-dark cursor-pointer"
+                    className="ml-1.5 px-1.5 py-0.2 bg-paper-light border border-ink text-[9px] font-bold uppercase hover:bg-paper-dark cursor-pointer shrink-0"
                   >
                     Annuler
                   </button>
@@ -1105,7 +1119,7 @@ export const Board: React.FC = () => {
             exit={{ opacity: 0, x: 14 }}
             transition={{ duration: 0.14 }}
             aria-label="Fiche détaillée de la carte"
-            className="pointer-events-none fixed right-3 bottom-36 z-40 w-72 sm:w-80 bg-paper-light border-4 border-ink shadow-press-lg p-3 text-ink"
+            className="pointer-events-none hidden md:block fixed right-3 bottom-36 z-40 w-72 sm:w-80 bg-paper-light border-4 border-ink shadow-press-lg p-3 text-ink"
           >
             {(() => {
               const { card: inspected, lane: inspectedLane } = inspectedCardEntry;
@@ -1243,7 +1257,7 @@ export const Board: React.FC = () => {
         ref={lanesScrollerRef}
         tabIndex={0}
         aria-label="Terrains de campagne"
-        className="flex md:grid md:grid-cols-3 overflow-x-auto md:overflow-visible snap-x snap-mandatory gap-3.5 mb-1.5 flex-1 min-h-0"
+        className="flex md:grid md:grid-cols-3 overflow-x-auto md:overflow-visible overflow-y-hidden snap-x snap-mandatory gap-2.5 md:gap-3.5 mb-1 md:mb-1.5 flex-1 min-h-0 w-full"
       >
         {gameState.lanes.map((lane) => (
           <LaneComponent
@@ -1277,8 +1291,7 @@ export const Board: React.FC = () => {
       </main>
 
       {/* =====================================================================
-          4. BARRE INFÉRIEURE : MAIN ÉPURÉE À GAUCHE + CONTRÔLES DE JEU À DROITE
-             (ERGONOMIE POUCE / SOURIS)
+          4. BARRE INFÉRIEURE : MAIN COMPACTE + BARRE D'ACTION SUR 1 SEULE LIGNE
       ===================================================================== */}
       <footer
         onDragOver={(e) => {
@@ -1297,7 +1310,7 @@ export const Board: React.FC = () => {
             handleRecallCard(cardIdToRecall);
           }
         }}
-        className={`relative px-2.5 py-1.5 md:px-4 md:py-2 shrink-0 transition-all ${
+        className={`relative px-2 py-1 md:px-4 md:py-2 shrink-0 w-full max-w-full overflow-x-hidden transition-all ${
           draggingBoardCard
             ? isDragOverHand
               ? 'bg-amber-100 border-4 border-gold ring-4 ring-gold/70 shadow-press-gold'
@@ -1312,23 +1325,23 @@ export const Board: React.FC = () => {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 6 }}
-              className="pointer-events-none mb-1.5 py-1 px-3 bg-gold text-white border-2 border-ink font-mono font-black text-xs uppercase flex items-center justify-center gap-2 shadow-press-sm"
+              className="pointer-events-none mb-1 py-1 px-2 bg-gold text-white border-2 border-ink font-mono font-black text-[10px] md:text-xs uppercase flex items-center justify-center gap-1.5 shadow-press-sm"
             >
-              <Undo2 className="w-4 h-4 animate-bounce" />
-              <span>
-                Relâcher ici pour reprendre « {draggingBoardCard.card.name} » en main (+
-                {draggingBoardCard.card.cost} Capital remboursé)
+              <Undo2 className="w-3.5 h-3.5 animate-bounce shrink-0" />
+              <span className="truncate">
+                Relâcher ici pour reprendre « {draggingBoardCard.card.name} » (+
+                {draggingBoardCard.card.cost} Capital)
               </span>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2">
-          {/* Cartes en main épurées (défilables horizontalement sur petit écran) */}
-          <div className="flex-1 flex items-center justify-start md:justify-center gap-2 sm:gap-3 overflow-x-auto py-0.5 min-w-0">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-1.5 md:gap-2 w-full min-w-0">
+          {/* Cartes en main en carrousel horizontal compact sur mobile */}
+          <div className="flex-1 flex flex-nowrap items-center justify-start md:justify-center gap-1.5 sm:gap-2.5 overflow-x-auto py-0.5 min-w-0 w-full">
             {gameState.playerHand.length === 0 ? (
-              <div className="py-4 px-3 text-center font-mono text-xs text-ink-muted italic w-full">
-                Aucune carte en main — cliquez sur « FIN DE TOUR » pour piocher jusqu&apos;à 3 cartes.
+              <div className="py-3 px-2 text-center font-mono text-[11px] md:text-xs text-ink-muted italic w-full">
+                Aucune carte en main — touchez « FIN TOUR » pour piocher jusqu&apos;à 3 cartes.
               </div>
             ) : (
               gameState.playerHand.map((card, index) => {
@@ -1359,28 +1372,24 @@ export const Board: React.FC = () => {
             )}
           </div>
 
-          {/* Contrôles de jeu regroupés à droite de la main : Jeton Capital + Annuler + Presse x2 + FIN DE TOUR */}
-          <div className="flex items-center justify-between lg:justify-end gap-2 shrink-0 border-t lg:border-t-0 lg:border-l-2 border-ink/30 pt-1.5 lg:pt-0 lg:pl-3">
-            {/* Indicateur de Capital Politique : Gros jeton doré bien visible */}
+          {/* Barre de contrôle sur UNE SEULE LIGNE compacte (w-full text-xs sur mobile) */}
+          <div className="w-full lg:w-auto flex items-center justify-between lg:justify-end gap-1.5 shrink-0 border-t lg:border-t-0 lg:border-l-2 border-ink/30 pt-1 lg:pt-0 lg:pl-3 text-xs">
+            {/* Indicateur Capital 1/1 */}
             <div
-              className="flex items-center gap-1.5 bg-paper-light border-2 border-ink px-2 py-1 shadow-press-sm"
+              className="flex items-center gap-1 bg-paper-light border-2 border-ink px-1.5 py-1 shadow-press-sm shrink-0"
               title="Votre Capital Politique disponible ce tour-ci"
             >
-              <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gold text-white border-2 border-ink flex items-center justify-center font-mono font-black text-sm md:text-base shadow-press-sm">
+              <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-gold text-white border border-ink flex items-center justify-center font-mono font-black text-xs md:text-sm">
                 {gameState.playerCapital}
               </div>
-              <div className="leading-none">
-                <div className="text-[9px] font-mono font-bold uppercase text-ink-muted">
-                  Capital
-                </div>
-                <div className="text-xs font-mono font-black text-ink">
-                  /{gameState.playerMaxCapital}
-                </div>
-              </div>
+              <span className="font-mono font-black text-[11px] md:text-xs text-ink whitespace-nowrap">
+                <span className="hidden sm:inline">Capital </span>
+                {gameState.playerCapital}/{gameState.playerMaxCapital}
+              </span>
             </div>
 
-            <div className="flex items-center gap-1.5">
-              {/* Bouton Annuler (icône discrète) */}
+            <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
+              {/* Bouton Annuler */}
               <button
                 type="button"
                 disabled={
@@ -1390,10 +1399,11 @@ export const Board: React.FC = () => {
                 }
                 onClick={handleUndoTurn}
                 aria-label="Annuler le tour"
-                className="p-2 bg-amber-100 text-ink border-2 border-ink font-mono font-extrabold text-xs uppercase shadow-press-sm hover:bg-amber-200 transition-all flex items-center justify-center disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer"
+                className="px-2 py-1.5 bg-amber-100 text-ink border-2 border-ink font-mono font-extrabold text-xs uppercase shadow-press-sm hover:bg-amber-200 transition-all flex items-center justify-center gap-1 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer shrink-0"
                 title="Annuler le tour (reprendre les cartes posées ce tour-ci et récupérer le Capital)"
               >
-                <Undo2 className="w-4 h-4" />
+                <Undo2 className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline">Annuler</span>
               </button>
 
               {/* Bouton Presse x2 */}
@@ -1406,7 +1416,7 @@ export const Board: React.FC = () => {
                   isDebating
                 }
                 onClick={handleCallPress}
-                className={`px-2.5 py-2 border-2 border-ink font-mono font-extrabold text-xs uppercase flex items-center gap-1 transition-transform ${
+                className={`px-2 py-1.5 border-2 border-ink font-mono font-extrabold text-[11px] md:text-xs uppercase flex items-center gap-1 transition-transform shrink-0 whitespace-nowrap ${
                   gameState.stakesMultiplier > 1
                     ? 'bg-gold text-white cursor-default shadow-press-sm'
                     : gameState.turn >= 7
@@ -1421,19 +1431,24 @@ export const Board: React.FC = () => {
                     : 'Convoquer la Presse : double la mise finale (x2)'
                 }
               >
-                <Megaphone className="w-3.5 h-3.5" />
+                <Megaphone className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
                 <span>Presse x2</span>
               </button>
 
-              {/* Gros bouton principal FIN DE TOUR (Tour X/8) */}
+              {/* Bouton principal FIN TOUR 1/8 (ne dépasse jamais du bord droit) */}
               <button
                 type="button"
                 disabled={gameState.phase !== 'PLAYER_ACTION' || isDebating}
                 onClick={handleEndTurn}
-                className="px-3.5 py-2 md:px-4 md:py-2.5 bg-royal text-white border-2 border-ink font-mono font-black text-xs md:text-sm uppercase shadow-press hover:bg-royal-dark hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                className="px-2.5 py-1.5 md:px-4 md:py-2 bg-royal text-white border-2 border-ink font-mono font-black text-xs uppercase shadow-press hover:bg-royal-dark hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-1 disabled:opacity-50 cursor-pointer shrink-0 whitespace-nowrap"
               >
-                <Play className="w-4 h-4 fill-current shrink-0" />
-                <span>
+                <Play className="w-3.5 h-3.5 fill-current shrink-0" />
+                <span className="md:hidden">
+                  {isDebating
+                    ? 'Débat...'
+                    : `FIN TOUR ${gameState.turn}/${gameState.maxTurns}`}
+                </span>
+                <span className="hidden md:inline">
                   {isDebating
                     ? 'Débat...'
                     : `FIN DE TOUR (Tour ${gameState.turn}/${gameState.maxTurns})`}

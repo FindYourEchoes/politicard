@@ -48,6 +48,12 @@ const SHORT_LANE_BADGES: Record<Lane['modifierCode'], string> = {
   LA_RUE_POPULIST_ARENA: 'Bonus : Populiste +2',
 };
 
+const SHORT_MOBILE_TITLES: Record<Lane['modifierCode'], string> = {
+  JT_20H_MEDIA_AMPLIFIER: 'JT de 20h',
+  HEMICYCLE_INSTITUTIONAL: "L'Hémicycle",
+  LA_RUE_POPULIST_ARENA: 'La Rue & Réseaux',
+};
+
 const SLOTS = [0, 1, 2];
 
 export const LaneComponent: React.FC<LaneComponentProps> = ({
@@ -74,6 +80,7 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
   const playerCharisma = getLaneTotalCharisma(lane, 'PLAYER', allLanes);
   const aiCharisma = getLaneTotalCharisma(lane, 'AI', allLanes);
   const shortBadge = SHORT_LANE_BADGES[lane.modifierCode];
+  const shortMobileTitle = SHORT_MOBILE_TITLES[lane.modifierCode] || lane.name;
 
   const eligibleUpgradeTargets = lane.playerCards.filter((fig) =>
     canEquipUpgradeOnFigure(fig)
@@ -195,9 +202,9 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
         </AnimatePresence>
       </div>
 
-      {/* En-tête épuré du Terrain avec étiquette courte et infobulle sur l'icône (i) */}
+      {/* En-tête épuré du Terrain avec titre court non-tronqué sur mobile et infobulle sur l'icône (i) */}
       <div
-        className={`relative border-b-2 border-ink px-3 py-2 select-none transition-colors shrink-0 ${
+        className={`relative border-b-2 border-ink px-2.5 py-1 md:px-3 md:py-2 select-none transition-colors shrink-0 ${
           isAttackingLane
             ? 'bg-gold/25'
             : isPlayerDominating
@@ -208,9 +215,9 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
         }`}
       >
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center gap-1.5 md:gap-2 min-w-0">
             <div
-              className={`w-7 h-7 flex items-center justify-center shrink-0 border border-ink ${
+              className={`w-6 h-6 md:w-7 md:h-7 flex items-center justify-center shrink-0 border border-ink ${
                 isAttackingLane
                   ? 'bg-gold text-white'
                   : isPlayerDominating
@@ -220,24 +227,29 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
                   : 'bg-ink text-paper'
               }`}
             >
-              <LaneIcon className="w-4 h-4" />
+              <LaneIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
             </div>
             <div className="min-w-0">
-              <h3 className="font-serif font-black text-sm text-ink truncate uppercase tracking-tight">
-                {lane.name}
+              <h3 className="font-serif font-black text-xs md:text-sm text-ink uppercase tracking-tight leading-none">
+                <span className="md:hidden">{shortMobileTitle}</span>
+                <span className="hidden md:inline">{lane.name}</span>
               </h3>
             </div>
           </div>
 
           <div
-            className="flex items-center gap-1.5 shrink-0"
+            className="flex items-center gap-1 shrink-0"
             onMouseEnter={() => setShowLaneTooltip(true)}
             onMouseLeave={() => setShowLaneTooltip(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowLaneTooltip((prev) => !prev);
+            }}
           >
-            <span className="px-2 py-0.5 bg-paper-light border border-ink/60 text-[10px] font-mono font-bold text-crimson uppercase">
+            <span className="px-1.5 py-0.5 bg-paper-light border border-ink/60 text-[9px] md:text-[10px] font-mono font-bold text-crimson uppercase whitespace-nowrap">
               {shortBadge}
             </span>
-            <Info className="w-4 h-4 text-ink-muted hover:text-ink cursor-help" />
+            <Info className="w-3.5 h-3.5 md:w-4 md:h-4 text-ink-muted hover:text-ink cursor-help shrink-0" />
           </div>
         </div>
 
@@ -267,7 +279,7 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
 
       {/* SECTION HAUTE : Camp IA + Enveloppes Casseroles bien visibles sur le bord */}
       <div
-        className={`p-2 flex-1 flex flex-col justify-between min-h-[126px] transition-all ${
+        className={`p-1.5 md:p-2 flex-1 flex flex-col justify-between min-h-0 md:min-h-[126px] transition-all ${
           isHighlightingTrapZone
             ? 'bg-orange-500/20 ring-2 ring-inset ring-orange-600 animate-pulse'
             : isHighlightingEventLane
@@ -277,8 +289,8 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
       >
         {/* Enveloppes Casseroles posées sur le bord du terrain */}
         {(lane.aiTraps.length > 0 || lane.playerTraps.length > 0) && (
-          <div className="flex flex-wrap items-center justify-between gap-1.5 mb-1.5 shrink-0">
-            <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center justify-between gap-1 mb-1 shrink-0">
+            <div className="flex items-center gap-1">
               {lane.playerTraps.map((trap) => (
                 <CardComponent
                   key={trap.id}
@@ -295,7 +307,7 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
                 />
               ))}
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               {lane.aiTraps.map((trap) => (
                 <CardComponent
                   key={trap.id}
@@ -309,7 +321,7 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-2 flex-1 items-stretch">
+        <div className="grid grid-cols-3 gap-1.5 md:gap-2 flex-1 min-h-0 items-stretch">
           {SLOTS.map((slotIndex) => {
             const aiCard = getCardAtSlot(lane.aiCards, slotIndex);
             const cardFb = aiCard
@@ -318,7 +330,7 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
             return (
               <div
                 key={aiCard ? aiCard.id : `ai-empty-${slotIndex}`}
-                className="w-full h-full min-h-[104px] flex items-stretch"
+                className="w-full h-full min-h-[72px] md:min-h-[104px] flex items-stretch"
               >
                 <AnimatePresence mode="popLayout">
                   {aiCard ? (
@@ -337,7 +349,7 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
                       key={`ai-empty-box-${slotIndex}`}
                       initial={{ opacity: 0.5 }}
                       animate={{ opacity: 1 }}
-                      className={`w-full h-full min-h-[104px] border border-dashed transition-all ${
+                      className={`w-full h-full min-h-[72px] md:min-h-[104px] border border-dashed transition-all ${
                         isHighlightingTrapZone
                           ? 'border-orange-600 bg-crimson/15'
                           : 'border-ink/15 bg-paper/40'
@@ -353,7 +365,7 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
 
       {/* BANDEAU CENTRAL : Duel de Force très lisible (IA : X ⚔️ VOUS : Y) */}
       <div
-        className={`px-3 py-1 flex items-center justify-between border-y-2 border-ink transition-colors shrink-0 ${
+        className={`px-2.5 py-0.5 md:px-3 md:py-1 flex items-center justify-between border-y-2 border-ink transition-colors shrink-0 ${
           isAttackingLane
             ? 'bg-gold text-white'
             : isPlayerDominating
@@ -363,24 +375,24 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
             : 'bg-ink text-paper'
         }`}
       >
-        <div className="flex items-center gap-1.5 font-mono font-black text-xs md:text-sm tracking-tight">
+        <div className="flex items-center gap-1 md:gap-1.5 font-mono font-black text-xs md:text-sm tracking-tight">
           <span className="opacity-90">IA :</span>
-          <span className="px-2 py-0.2 bg-ink/85 text-white border border-white/40">
+          <span className="px-1.5 md:px-2 py-0.2 bg-ink/85 text-white border border-white/40">
             {aiCharisma}
           </span>
         </div>
 
         <div className="flex items-center gap-1.5 font-mono font-extrabold text-xs uppercase">
           <Swords
-            className={`w-4 h-4 ${
+            className={`w-3.5 h-3.5 md:w-4 md:h-4 ${
               isAttackingLane ? 'text-white animate-bounce' : 'text-gold'
             }`}
           />
         </div>
 
-        <div className="flex items-center gap-1.5 font-mono font-black text-xs md:text-sm tracking-tight">
+        <div className="flex items-center gap-1 md:gap-1.5 font-mono font-black text-xs md:text-sm tracking-tight">
           <span className="opacity-90">VOUS :</span>
-          <span className="px-2 py-0.2 bg-ink/85 text-white border border-white/40">
+          <span className="px-1.5 md:px-2 py-0.2 bg-ink/85 text-white border border-white/40">
             {playerCharisma}
           </span>
         </div>
@@ -388,11 +400,11 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
 
       {/* SECTION BASSE : Camp Joueur (Emplacements vides épurés et discrets) */}
       <div
-        className={`p-2 flex-1 flex flex-col justify-between min-h-[116px] relative transition-all ${
+        className={`p-1.5 md:p-2 flex-1 flex flex-col justify-between min-h-0 md:min-h-[116px] relative transition-all ${
           isHighlightingEventLane ? 'bg-gold/15' : 'bg-paper-light'
         }`}
       >
-        <div className="grid grid-cols-3 gap-2 flex-1 items-stretch">
+        <div className="grid grid-cols-3 gap-1.5 md:gap-2 flex-1 min-h-0 items-stretch">
           {SLOTS.map((slotIndex) => {
             const playerCard = getCardAtSlot(lane.playerCards, slotIndex);
             const cardFb = playerCard
@@ -409,7 +421,7 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
             return (
               <div
                 key={playerCard ? playerCard.id : `player-empty-${slotIndex}`}
-                className="w-full h-full min-h-[104px] flex items-stretch"
+                className="w-full h-full min-h-[72px] md:min-h-[104px] flex items-stretch"
               >
                 <AnimatePresence mode="popLayout">
                   {playerCard ? (
@@ -484,7 +496,7 @@ export const LaneComponent: React.FC<LaneComponentProps> = ({
                           }
                         }
                       }}
-                      className={`w-full h-full min-h-[104px] border border-dashed transition-all ${
+                      className={`w-full h-full min-h-[72px] md:min-h-[104px] border border-dashed transition-all ${
                         isSlotHoveredForFigure
                           ? 'border-emerald-700 bg-emerald-500/35 ring-2 ring-emerald-500/70'
                           : isHighlightingFigureSlots
