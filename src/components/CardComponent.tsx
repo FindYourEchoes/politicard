@@ -7,6 +7,8 @@ import {
   FileWarning,
   Flame,
   FolderLock,
+  Heart,
+  HelpCircle,
   History,
   Megaphone,
   MessageSquareWarning,
@@ -18,8 +20,6 @@ import {
   Sparkles,
   TrendingUp,
   Zap,
-  HelpCircle,
-  Heart,
 } from 'lucide-react';
 import { Card, FloatingFeedback, Lane } from '../types/game';
 import { getEffectiveCardCharisma } from '../engine/gameEngine';
@@ -76,17 +76,17 @@ const TYPE_STYLES: Record<
     borderAccent: 'border-ink',
   },
   UPGRADE: {
-    label: 'IDÉOLOGIE',
+    label: 'IDÉO',
     badgeBg: 'bg-royal text-white',
     borderAccent: 'border-royal',
   },
   EVENT: {
-    label: 'UNE / FLASH',
+    label: 'FLASH',
     badgeBg: 'bg-gold text-white',
     borderAccent: 'border-gold',
   },
   TRAP: {
-    label: 'CASSEROLE',
+    label: 'PIÈGE',
     badgeBg: 'bg-crimson text-white',
     borderAccent: 'border-crimson',
   },
@@ -117,6 +117,7 @@ export const CardComponent: React.FC<CardComponentProps> = ({
 }) => {
   const [isDragOverFigure, setIsDragOverFigure] = useState(false);
   const [isDraggingSelf, setIsDraggingSelf] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const IconComponent = ICON_MAP[card.iconName] || HelpCircle;
   const typeMeta = TYPE_STYLES[card.type];
@@ -130,10 +131,10 @@ export const CardComponent: React.FC<CardComponentProps> = ({
     card.type === 'FIGURE' && card.credibility < card.maxCredibility;
   const isEliminated = card.type === 'FIGURE' && card.credibility <= 0;
 
-  // Léger effet d'éventail pour les cartes en main
+  // Effet d'éventail subtil pour les cartes en main
   const middleIndex = (handTotal - 1) / 2;
   const offsetFromCenter = inHand ? handIndex - middleIndex : 0;
-  const fanRotate = inHand ? offsetFromCenter * 1.2 : 0;
+  const fanRotate = inHand ? offsetFromCenter * 2 : 0;
   const fanY = inHand ? Math.abs(offsetFromCenter) * 2 : 0;
 
   const handleMouseEnter = () => {
@@ -145,13 +146,53 @@ export const CardComponent: React.FC<CardComponentProps> = ({
     onHoverCard?.(null);
   };
 
+  const hasImage = Boolean(card.imageUrl) && !imgError;
+
+  // Rendu de l'illustration Full-Art ou repli sur fond stylisé gravure/presse
+  const renderCardArt = () => {
+    if (hasImage) {
+      return (
+        <img
+          src={card.imageUrl}
+          alt={card.name}
+          onError={() => setImgError(true)}
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        />
+      );
+    }
+
+    return (
+      <div
+        className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none select-none overflow-hidden"
+        style={{
+          background:
+            card.type === 'FIGURE'
+              ? 'radial-gradient(circle at 50% 35%, #FAF7F0 0%, #E6DEC8 55%, #C2B39B 100%)'
+              : card.type === 'UPGRADE'
+              ? 'radial-gradient(circle at 50% 35%, #F0F4FA 0%, #D0DFF6 55%, #9DBAE8 100%)'
+              : card.type === 'EVENT'
+              ? 'radial-gradient(circle at 50% 35%, #FCF9EB 0%, #FAECBA 55%, #E3C56D 100%)'
+              : 'radial-gradient(circle at 50% 35%, #FCEEEC 0%, #F8CDC7 55%, #DE9289 100%)',
+          backgroundImage:
+            'radial-gradient(rgba(26,26,26,0.14) 1px, transparent 1px)',
+          backgroundSize: '5px 5px',
+        }}
+      >
+        <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-paper/85 border border-ink/40 flex items-center justify-center shadow-press-sm">
+          <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-ink" />
+        </div>
+      </div>
+    );
+  };
+
   // =========================================================================
-  // RENDU D'UNE CASSEROLE (PIÈGE) POSÉE SUR UN TERRAIN :
-  // Véritable enveloppe / dossier secret bien visible sur le bord du terrain !
+  // RENDU D'UNE CASSEROLE (PIÈGE) POSÉE SUR UN TERRAIN (Dossier secret)
   // =========================================================================
   if (card.type === 'TRAP' && !inHand) {
     const isHiddenAI = card.owner === 'AI' && card.isFaceDown;
-    const canRecallTrap = isNewlyPlaced && card.owner === 'PLAYER' && Boolean(onRecallCard);
+    const canRecallTrap =
+      isNewlyPlaced && card.owner === 'PLAYER' && Boolean(onRecallCard);
+
     return (
       <div
         className="relative inline-block select-none"
@@ -193,10 +234,10 @@ export const CardComponent: React.FC<CardComponentProps> = ({
           }}
           title={
             canRecallTrap
-              ? 'Glissez vers votre main ou un autre Terrain • Clic droit pour reprendre en main'
+              ? 'Glissez vers votre main ou un autre Terrain • Clic droit pour reprendre'
               : undefined
           }
-          className={`px-2 py-1 border-2 shadow-press-sm flex items-center gap-1.5 ${
+          className={`px-1.5 py-0.5 border-2 shadow-press-sm flex items-center gap-1 ${
             isHiddenAI
               ? 'bg-crimson text-white border-ink cursor-help'
               : canRecallTrap
@@ -205,33 +246,26 @@ export const CardComponent: React.FC<CardComponentProps> = ({
           }`}
         >
           <div
-            className={`w-5 h-5 border border-ink flex items-center justify-center shrink-0 ${
+            className={`w-4 h-4 border border-ink flex items-center justify-center shrink-0 ${
               isHiddenAI ? 'bg-ink text-crimson-light' : 'bg-gold text-white'
             }`}
           >
             {isHiddenAI ? (
-              <FolderLock className="w-3 h-3" />
+              <FolderLock className="w-2.5 h-2.5" />
             ) : (
-              <FileWarning className="w-3 h-3" />
+              <FileWarning className="w-2.5 h-2.5" />
             )}
           </div>
-          <div className="text-left leading-none">
-            <div className="flex items-center gap-1">
-              <span
-                className={`text-[8px] font-mono font-extrabold uppercase tracking-wider ${
-                  isHiddenAI ? 'text-amber-200' : 'text-crimson'
-                }`}
-              >
-                {isHiddenAI ? 'SECRET IA' : 'CASSEROLE'}
-              </span>
-              {canRecallTrap && (
-                <span className="px-1 py-0.2 bg-amber-600 text-white text-[7px] font-mono font-black uppercase border border-ink">
-                  NOUVEAU
-                </span>
-              )}
-            </div>
-            <div className="text-[10px] font-serif font-black truncate max-w-[110px] mt-0.5">
-              {isHiddenAI ? 'Confidentiel [?]' : card.name}
+          <div className="text-left leading-none min-w-0">
+            <span
+              className={`text-[7px] font-mono font-black uppercase ${
+                isHiddenAI ? 'text-amber-200' : 'text-crimson'
+              }`}
+            >
+              {isHiddenAI ? 'SECRET IA' : 'PIÈGE'}
+            </span>
+            <div className="text-[9px] font-serif font-black truncate max-w-[70px]">
+              {isHiddenAI ? 'Confidentiel' : card.name}
             </div>
           </div>
         </motion.div>
@@ -240,16 +274,18 @@ export const CardComponent: React.FC<CardComponentProps> = ({
   }
 
   // =========================================================================
-  // MODE "PION" SUR LE PLATEAU (compact = true)
-  // Uniquement : Grande icône, Nom court, et 2 gros badges + Badge d'impact au-dessus !
+  // MODE PION SUR LE PLATEAU (compact = true) - DESIGN FULL-ART
   // =========================================================================
   if (compact) {
     const canRecallFigure =
-      isNewlyPlaced && card.owner === 'PLAYER' && !isTargetable && Boolean(onRecallCard);
+      isNewlyPlaced &&
+      card.owner === 'PLAYER' &&
+      !isTargetable &&
+      Boolean(onRecallCard);
 
     return (
       <div
-        className="relative w-full h-full min-h-[72px] md:min-h-[104px] select-none"
+        className="relative w-full h-full min-h-[58px] sm:min-h-[68px] md:min-h-[82px] select-none"
         draggable={canRecallFigure}
         onDragStart={(e) => {
           if (canRecallFigure) {
@@ -293,16 +329,16 @@ export const CardComponent: React.FC<CardComponentProps> = ({
           }
         }}
       >
-        {/* Gros badge animé (-4 CRÉD. ou ÉLIMINÉ !) directement au-dessus de la carte touchée */}
+        {/* Badge animé (-4 CRÉD. ou ÉLIMINÉ !) */}
         <AnimatePresence>
           {cardFeedback && (
             <motion.div
               key={cardFeedback.id}
               initial={{ opacity: 0, y: 8, scale: 0.7 }}
-              animate={{ opacity: 1, y: -14, scale: 1.08 }}
-              exit={{ opacity: 0, y: -28, scale: 0.85 }}
+              animate={{ opacity: 1, y: -12, scale: 1.05 }}
+              exit={{ opacity: 0, y: -24, scale: 0.85 }}
               transition={{ duration: 0.3 }}
-              className={`pointer-events-none absolute -top-3 left-1/2 -translate-x-1/2 z-40 px-2.5 py-1 border-2 border-ink font-mono font-black text-xs uppercase whitespace-nowrap shadow-press ${
+              className={`pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 z-40 px-1.5 py-0.5 border-2 border-ink font-mono font-black text-[10px] md:text-xs uppercase whitespace-nowrap shadow-press ${
                 cardFeedback.tone === 'eliminated'
                   ? 'bg-ink text-crimson-light ring-2 ring-crimson'
                   : cardFeedback.tone === 'damage'
@@ -318,29 +354,25 @@ export const CardComponent: React.FC<CardComponentProps> = ({
         </AnimatePresence>
 
         <motion.div
-          initial={{ opacity: 1, scale: 0.92 }}
+          initial={{ opacity: 1, scale: 0.94 }}
           animate={
             isEliminated
-              ? {
-                  opacity: [1, 0.7, 0.35],
-                  scale: 0.94,
-                  rotate: -2,
-                }
+              ? { opacity: [1, 0.6, 0.25], scale: 0.92, rotate: -2 }
               : isAttacking
               ? {
                   opacity: 1,
-                  y: [0, card.owner === 'PLAYER' ? -18 : 18, 0],
-                  scale: [1, 1.09, 1],
+                  y: [0, card.owner === 'PLAYER' ? -14 : 14, 0],
+                  scale: [1, 1.08, 1],
                 }
               : {
                   opacity: 1,
                   x: 0,
                   y: 0,
-                  scale: isTargetable || isDragOverFigure ? 1.04 : 1,
+                  scale: isTargetable || isDragOverFigure ? 1.05 : 1,
                 }
           }
           exit={{ opacity: 0, scale: 0.75 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.35 }}
           onClick={(e) => {
             if (isTargetable && onClick) {
               e.stopPropagation();
@@ -352,91 +384,79 @@ export const CardComponent: React.FC<CardComponentProps> = ({
           }}
           title={
             canRecallFigure
-              ? 'Glissez vers votre main ou un autre Terrain • Clic droit pour reprendre en main'
+              ? 'Glissez vers votre main ou un autre Terrain • Clic droit pour reprendre'
               : undefined
           }
-          className={`relative w-full h-full min-h-[72px] md:min-h-[104px] p-1 md:p-1.5 border-2 flex flex-col items-center justify-between transition-colors ${
+          className={`relative w-full h-full min-h-[58px] sm:min-h-[68px] md:min-h-[82px] rounded-sm overflow-hidden border-2 flex flex-col justify-between transition-all ${
             isEliminated
-              ? 'bg-crimson/25 border-crimson ring-2 ring-crimson'
+              ? 'border-crimson ring-2 ring-crimson'
               : isTargetable || isDragOverFigure
-              ? 'bg-emerald-50/90 border-emerald-600 ring-4 ring-emerald-500/60 cursor-pointer animate-pulse shadow-lg'
+              ? 'border-emerald-600 ring-2 md:ring-4 ring-emerald-500/70 animate-pulse cursor-pointer shadow-lg'
               : canRecallFigure
-              ? 'bg-amber-50/70 border-dashed border-amber-700 shadow-press-sm hover:border-royal hover:bg-amber-100/70 draggable-card'
+              ? 'border-dashed border-amber-700 shadow-press-sm hover:border-royal draggable-card'
               : card.owner === 'PLAYER'
-              ? 'bg-paper-light border-ink shadow-press-sm hover:border-royal'
-              : 'bg-paper-light border-ink shadow-press-sm hover:border-crimson'
+              ? 'border-ink shadow-press-sm hover:border-royal'
+              : 'border-ink shadow-press-sm hover:border-crimson'
           }`}
         >
-          {/* Pastille de camp / badge "NOUVEAU" en haut à gauche + Upgrades équipés en haut à droite */}
-          <div className="w-full flex items-center justify-between gap-1">
-            <div className="flex items-center gap-0.5 md:gap-1">
-              <span
-                className={`text-[7px] md:text-[8px] font-mono font-extrabold px-1 py-0.2 border border-ink ${
-                  card.owner === 'PLAYER'
-                    ? 'bg-royal text-white'
-                    : 'bg-crimson text-white'
-                }`}
-              >
-                {card.owner === 'PLAYER' ? 'VOUS' : 'IA'}
-              </span>
-              {isNewlyPlaced && card.owner === 'PLAYER' && (
-                <span className="bg-amber-600 text-white px-1 py-0.2 text-[6px] md:text-[7px] font-mono font-black uppercase border border-ink">
-                  NOUVEAU
-                </span>
-              )}
-            </div>
+          {/* Illustration Full-Art (fond plein cadre) */}
+          {renderCardArt()}
+
+          {/* Vignette dégradée supérieure */}
+          <div className="absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-[2]" />
+
+          {/* Pastille de camp en haut à gauche + Upgrades en haut à droite */}
+          <div className="relative z-10 w-full flex items-center justify-between p-0.5">
+            <span
+              className={`text-[7px] md:text-[8px] font-mono font-black px-1 py-0.2 rounded-xs border border-ink ${
+                card.owner === 'PLAYER'
+                  ? 'bg-royal text-white'
+                  : 'bg-crimson text-white'
+              }`}
+            >
+              {card.owner === 'PLAYER' ? 'VOUS' : 'IA'}
+            </span>
 
             {card.upgrades.length > 0 && (
-              <span className="bg-gold text-white px-1 py-0.2 text-[7px] md:text-[8px] font-mono font-black border border-ink flex items-center gap-0.5 shadow-press-sm">
-                <Sparkles className="w-2.5 h-2.5" />+{card.upgrades.length}
+              <span className="bg-gold text-white px-1 py-0.2 text-[7px] md:text-[8px] font-mono font-black rounded-xs border border-ink flex items-center gap-0.5 shadow-press-sm">
+                <Sparkles className="w-2 h-2" />+{card.upgrades.length}
               </span>
             )}
           </div>
 
-          {/* Grande Illustration / Icône gravure de presse */}
-          <div
-            className="w-7 h-7 md:w-9 md:h-9 my-0.5 bg-paper-dark border-2 border-ink flex items-center justify-center relative shadow-press-sm shrink-0"
-            style={{
-              backgroundImage:
-                'radial-gradient(#1A1A1A 0.6px, transparent 0.6px)',
-              backgroundSize: '4px 4px',
-            }}
-          >
-            <div className="bg-paper-light/95 p-0.5 md:p-1 border border-ink/50">
-              <IconComponent className="w-3.5 h-3.5 md:w-4 md:h-4 text-ink" />
-            </div>
-          </div>
+          {/* Vignette dégradée inférieure pour le nom et les macarons */}
+          <div className="absolute inset-x-0 bottom-0 h-9 bg-gradient-to-t from-black/90 via-black/55 to-transparent pointer-events-none z-[3]" />
 
-          {/* Nom court centré */}
-          <div className="w-full text-center px-0.5">
-            <h4 className="font-serif font-black text-[10px] md:text-[11px] text-ink leading-tight truncate">
+          {/* Nom court centré au-dessus des badges */}
+          <div className="relative z-10 w-full text-center px-1 mb-0.5 pointer-events-none">
+            <span className="font-serif font-black text-[8px] sm:text-[9px] md:text-[10px] text-paper-light drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] truncate block leading-none">
               {card.name}
-            </h4>
+            </span>
           </div>
 
-          {/* Deux gros badges très lisibles en bas : Charisme (Orange) & Crédibilité (Bleu/Rouge) */}
-          <div className="w-full flex items-center justify-between gap-1 pt-0.5 md:pt-1 border-t border-ink/25">
+          {/* Macarons flottants en bas : Charisme (gauche) & Crédibilité (droite) */}
+          <div className="relative z-10 w-full flex items-center justify-between p-0.5">
             <div
-              className={`flex items-center justify-center gap-0.5 px-1 md:px-1.5 py-0.2 md:py-0.5 border border-ink font-mono font-black text-[10px] md:text-xs shadow-press-sm ${
+              className={`flex items-center justify-center gap-0.5 px-1 py-0.2 rounded-xs border border-ink font-mono font-black text-[8px] md:text-[10px] shadow-press-sm ${
                 isBuffedCharisma
                   ? 'bg-amber-500 text-white ring-1 ring-gold'
                   : 'bg-gold text-white'
               }`}
-              title="Charisme (Force d'attaque)"
+              title="Charisme"
             >
-              <Megaphone className="w-2.5 h-2.5 md:w-3 md:h-3 shrink-0" />
+              <Megaphone className="w-2 h-2 shrink-0" />
               <span>{effectiveCharisma}</span>
             </div>
 
             <div
-              className={`flex items-center justify-center gap-0.5 px-1 md:px-1.5 py-0.2 md:py-0.5 border border-ink font-mono font-black text-[10px] md:text-xs shadow-press-sm ${
+              className={`flex items-center justify-center gap-0.5 px-1 py-0.2 rounded-xs border border-ink font-mono font-black text-[8px] md:text-[10px] shadow-press-sm ${
                 isDamaged || isEliminated
                   ? 'bg-crimson text-white'
                   : 'bg-royal text-white'
               }`}
-              title="Crédibilité (Points de vie)"
+              title="Crédibilité"
             >
-              <Heart className="w-2.5 h-2.5 md:w-3 md:h-3 shrink-0" />
+              <Heart className="w-2 h-2 shrink-0" />
               <span>{Math.max(0, card.credibility)}</span>
             </div>
           </div>
@@ -446,8 +466,7 @@ export const CardComponent: React.FC<CardComponentProps> = ({
   }
 
   // =========================================================================
-  // MODE CARTE EN MAIN ULTRA-ÉPURÉ (inHand = true)
-  // Format compact sur mobile (w-24 h-32) pour réduire la hauteur de 35 % !
+  // MODE CARTE EN MAIN FULL-ART (STYLE MARVEL SNAP)
   // =========================================================================
   return (
     <div
@@ -472,114 +491,113 @@ export const CardComponent: React.FC<CardComponentProps> = ({
     >
       <motion.div
         layout={!isDraggingSelf}
-        initial={{ opacity: 0, y: 12, scale: 0.94 }}
+        initial={{ opacity: 0, y: 10, scale: 0.94 }}
         animate={{
-          opacity: inHand && !isPlayable ? 0.45 : 1,
-          y: isDraggingSelf ? 0 : isSelected ? -8 : fanY * 0.5,
-          rotate: isDraggingSelf ? 0 : isSelected ? 0 : fanRotate * 0.5,
-          scale: isDraggingSelf ? 1 : isSelected ? 1.04 : 1,
+          opacity: inHand && !isPlayable ? 0.5 : 1,
+          y: isDraggingSelf ? 0 : isSelected ? -16 : fanY,
+          rotate: isDraggingSelf ? 0 : isSelected ? 0 : fanRotate,
+          scale: isDraggingSelf ? 1 : isSelected ? 1.12 : 1,
+          zIndex: isSelected ? 30 : 10 + handIndex,
         }}
         whileHover={
           inHand && isPlayable && !isDraggingSelf
-            ? { y: -8, rotate: 0, scale: 1.03, zIndex: 30 }
+            ? { y: -12, rotate: 0, scale: 1.06, zIndex: 35 }
             : undefined
         }
-        transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+        transition={{ type: 'spring', stiffness: 340, damping: 22 }}
         onClick={onClick}
-        className={`relative bg-paper-light border-2 ${
+        className={`relative rounded border-2 overflow-hidden shadow-press transition-all ${
           isSelected
-            ? 'border-emerald-600 ring-4 ring-emerald-500/60 shadow-press z-20'
+            ? 'border-emerald-600 ring-4 ring-emerald-500/70 shadow-press-gold'
             : typeMeta.borderAccent
-        } w-24 h-32 md:w-36 md:h-auto p-1.5 md:p-2 flex flex-col justify-between shadow-press transition-all ${
+        } w-16 h-24 sm:w-20 sm:h-28 md:w-28 md:h-38 flex flex-col justify-between ${
           inHand && isPlayable
-            ? 'draggable-card'
+            ? 'draggable-card cursor-pointer'
             : inHand && !isPlayable
             ? 'cursor-not-allowed grayscale-[35%]'
             : 'cursor-default'
         }`}
       >
-        {/* 1. En-tête : Coût en Capital + Badge Type court */}
-        <div className="flex items-center justify-between gap-1 shrink-0">
-          <span
-            className={`w-5 h-5 md:w-6 md:h-6 text-[10px] md:text-xs ${
+        {/* Illustration Full-Art plein cadre */}
+        {renderCardArt()}
+
+        {/* Vignette dégradée supérieure */}
+        <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-[2]" />
+
+        {/* 1. Macaron Coût (en haut à gauche) + Type court (en haut à droite) */}
+        <div className="relative z-10 w-full flex items-center justify-between p-1">
+          <div
+            className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full ${
               isPlayable ? 'bg-gold text-white' : 'bg-ink-faint text-paper'
-            } border-2 border-ink font-mono font-black flex items-center justify-center shadow-press-sm shrink-0`}
-            title={`Coût : ${card.cost} Capital Politique`}
+            } border-2 border-ink font-mono font-black text-[10px] sm:text-xs flex items-center justify-center shadow-press-sm`}
+            title={`Coût : ${card.cost} Capital`}
           >
             {card.cost}
-          </span>
+          </div>
+
           <span
-            className={`text-[7px] md:text-[8px] px-1 md:px-1.5 py-0.5 font-mono font-extrabold uppercase truncate ${typeMeta.badgeBg}`}
+            className={`text-[7px] sm:text-[8px] px-1 py-0.2 rounded-xs font-mono font-black uppercase border border-ink shadow-sm ${typeMeta.badgeBg}`}
           >
             {typeMeta.label}
           </span>
         </div>
 
-        {/* 2. Grande Zone d'Illustration centrée */}
-        <div
-          className="w-full h-9 md:h-14 my-0.5 md:my-1.5 bg-paper-dark border-2 border-ink flex items-center justify-center relative overflow-hidden shadow-press-sm shrink-0"
-          style={{
-            backgroundImage:
-              'radial-gradient(#1A1A1A 0.6px, transparent 0.6px)',
-            backgroundSize: '4px 4px',
-          }}
-        >
-          <div className="bg-paper-light/95 p-1 md:p-1.5 border border-ink/50 shadow-press-sm">
-            <IconComponent className="w-4 h-4 md:w-7 md:h-7 text-ink" />
-          </div>
-        </div>
+        {/* Vignette dégradée inférieure pour le nom et les stats */}
+        <div className="absolute inset-x-0 bottom-0 h-10 sm:h-12 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-none z-[3]" />
 
-        {/* 3. Nom de la carte (sans sous-titre ni pavé de texte) */}
-        <div className="min-h-[1.5rem] md:min-h-[2rem] flex items-center justify-center text-center px-0.5 mb-0.5 md:mb-1.5">
-          <h4 className="font-serif font-black text-[10px] md:text-xs leading-tight text-ink line-clamp-2">
+        {/* 2. Nom de la carte centré en bas */}
+        <div className="relative z-10 w-full text-center px-1 mb-0.5 pointer-events-none">
+          <h4 className="font-serif font-black text-[8px] sm:text-[10px] md:text-[11px] text-paper-light drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] truncate leading-tight">
             {card.name}
           </h4>
         </div>
 
-        {/* 4. Deux gros badges de stats en bas (Charisme Orange / Crédibilité Bleu) */}
-        {card.type === 'FIGURE' || card.type === 'UPGRADE' ? (
-          <div className="flex items-center justify-between gap-1 pt-0.5 md:pt-1 border-t border-ink/30 font-mono font-black text-[10px] md:text-xs shrink-0">
-            <div
-              className="flex items-center gap-0.5 px-1 md:px-1.5 py-0.2 md:py-0.5 bg-gold text-white border border-ink shadow-press-sm"
-              title="Charisme (Force d'attaque)"
-            >
-              <Megaphone className="w-2.5 h-2.5 md:w-3 md:h-3 shrink-0" />
-              <span>
-                {card.type === 'UPGRADE' && effectiveCharisma >= 0
-                  ? `+${effectiveCharisma}`
-                  : effectiveCharisma}
-              </span>
-            </div>
+        {/* 3. Macarons flottants en bas : Charisme (gauche) & Crédibilité (droite) */}
+        <div className="relative z-10 w-full flex items-center justify-between p-1">
+          {card.type === 'FIGURE' || card.type === 'UPGRADE' ? (
+            <>
+              <div
+                className="flex items-center gap-0.5 px-1 py-0.2 sm:px-1.5 sm:py-0.5 rounded-xs bg-gold text-white border border-ink font-mono font-black text-[8px] sm:text-[10px] shadow-press-sm"
+                title="Charisme"
+              >
+                <Megaphone className="w-2.5 h-2.5 shrink-0" />
+                <span>
+                  {card.type === 'UPGRADE' && effectiveCharisma >= 0
+                    ? `+${effectiveCharisma}`
+                    : effectiveCharisma}
+                </span>
+              </div>
 
-            <div
-              className={`flex items-center gap-0.5 px-1 md:px-1.5 py-0.2 md:py-0.5 border border-ink shadow-press-sm ${
-                card.credibility < 0
-                  ? 'bg-crimson text-white'
-                  : 'bg-royal text-white'
-              }`}
-              title="Crédibilité (Points de vie)"
-            >
-              <Heart className="w-2.5 h-2.5 md:w-3 md:h-3 shrink-0" />
-              <span>
-                {card.type === 'UPGRADE' && card.credibility >= 0
-                  ? `+${card.credibility}`
-                  : card.credibility}
+              <div
+                className={`flex items-center gap-0.5 px-1 py-0.2 sm:px-1.5 sm:py-0.5 rounded-xs border border-ink font-mono font-black text-[8px] sm:text-[10px] shadow-press-sm ${
+                  card.credibility < 0
+                    ? 'bg-crimson text-white'
+                    : 'bg-royal text-white'
+                }`}
+                title="Crédibilité"
+              >
+                <Heart className="w-2.5 h-2.5 shrink-0" />
+                <span>
+                  {card.type === 'UPGRADE' && card.credibility >= 0
+                    ? `+${card.credibility}`
+                    : card.credibility}
+                </span>
+              </div>
+            </>
+          ) : (
+            <div className="w-full text-center">
+              <span
+                className={`px-1.5 py-0.2 rounded-xs font-mono font-black text-[7px] sm:text-[8px] uppercase border border-ink ${
+                  card.type === 'EVENT'
+                    ? 'bg-gold/90 text-white'
+                    : 'bg-crimson/90 text-white'
+                }`}
+              >
+                {card.type === 'EVENT' ? '⚡ ACTION' : '📁 SECRET'}
               </span>
             </div>
-          </div>
-        ) : (
-          <div className="pt-0.5 md:pt-1 border-t border-ink/30 shrink-0">
-            <div
-              className={`w-full py-0.2 md:py-0.5 text-center font-mono font-black text-[8px] md:text-[9px] uppercase border border-ink ${
-                card.type === 'EVENT'
-                  ? 'bg-gold/25 text-ink'
-                  : 'bg-crimson/15 text-crimson'
-              }`}
-            >
-              {card.type === 'EVENT' ? '⚡ Effet Immédiat' : '📁 Piège Secret'}
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </motion.div>
     </div>
   );

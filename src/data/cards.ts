@@ -2,7 +2,7 @@ import { Card } from '../types/game';
 
 export type CardTemplate = Omit<Card, 'id' | 'owner' | 'upgrades' | 'isFaceDown' | 'playedOnTurn' | 'slotIndex'>;
 
-export const CARD_DATABASE: CardTemplate[] = [
+const RAW_CARD_DATABASE: CardTemplate[] = [
   // ==========================================
   // 1. FIGURES POLITIQUES (10 Cartes)
   // ==========================================
@@ -440,12 +440,18 @@ export const CARD_DATABASE: CardTemplate[] = [
   },
 ];
 
+export const CARD_DATABASE: CardTemplate[] = RAW_CARD_DATABASE.map((card) => ({
+  ...card,
+  imageUrl: card.imageUrl || `/cards/${card.templateId}.png`,
+}));
+
 let uniqueCardSequence = 1;
 
 export function createCardInstance(template: CardTemplate, owner: 'PLAYER' | 'AI'): Card {
   uniqueCardSequence += 1;
   return {
     ...template,
+    imageUrl: template.imageUrl || `/cards/${template.templateId}.png`,
     id: `${owner.toLowerCase()}-${template.templateId}-${uniqueCardSequence}`,
     owner,
     upgrades: [],

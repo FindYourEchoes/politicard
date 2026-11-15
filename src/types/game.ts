@@ -61,6 +61,7 @@ export interface Card {
   effect: ActiveEffect;
   flavorText: string;
   iconName: string;
+  imageUrl?: string;        // Illustration Full-Art (ex: /cards/fig-jeune-loup.png)
   upgrades: Card[];         // Upgrades équipés sur cette Figure
   owner: 'PLAYER' | 'AI';
   isFaceDown?: boolean;     // Pour les Pièges (Casseroles)

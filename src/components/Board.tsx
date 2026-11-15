@@ -122,8 +122,6 @@ export const Board: React.FC = () => {
   const [statusBanner, setStatusBanner] = useState<string | null>(null);
   const [isLogDrawerOpen, setIsLogDrawerOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeMobileLaneId, setActiveMobileLaneId] =
-    useState<string>('lane-jt-20h');
   const [showFlashInfo, setShowFlashInfo] = useState(true);
   const [activeTrapFlash, setActiveTrapFlash] =
     useState<TriggeredTrapAlert | null>(null);
@@ -136,53 +134,12 @@ export const Board: React.FC = () => {
   const discardDialogRef = useRef<HTMLDialogElement | null>(null);
   const gameOverDialogRef = useRef<HTMLDialogElement | null>(null);
   const lastShownTrapAlertIdRef = useRef<string | null>(null);
-  const lanesScrollerRef = useRef<HTMLElement | null>(null);
   const menuContainerRef = useRef<HTMLDivElement | null>(null);
 
   const latestLog = gameState.logs[0] || null;
   const currentTurnLogsCount = gameState.logs.filter(
     (entry) => entry.turn === gameState.turn
   ).length;
-
-  // Synchronisation de l'onglet actif sur mobile avec le conteneur scroll-snap horizontal
-  useEffect(() => {
-    const scroller = lanesScrollerRef.current;
-    if (!scroller) return;
-
-    const onSnapChange = (event: Event) => {
-      const snapped = (event as Event & { snapTargetInline?: HTMLElement | null })
-        .snapTargetInline;
-      if (snapped?.id) {
-        setActiveMobileLaneId(snapped.id);
-      }
-    };
-
-    scroller.addEventListener('scrollsnapchange', onSnapChange);
-
-    let observer: IntersectionObserver | null = null;
-    if (
-      typeof HTMLElement !== 'undefined' &&
-      !('onscrollsnapchange' in HTMLElement.prototype) &&
-      typeof IntersectionObserver !== 'undefined'
-    ) {
-      observer = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            if (entry.isIntersecting && entry.target.id) {
-              setActiveMobileLaneId(entry.target.id);
-            }
-          }
-        },
-        { root: scroller, threshold: 0.6 }
-      );
-      Array.from(scroller.children).forEach((child) => observer?.observe(child));
-    }
-
-    return () => {
-      scroller.removeEventListener('scrollsnapchange', onSnapChange);
-      observer?.disconnect();
-    };
-  }, []);
 
   // Fermeture du menu déroulant (☰ Menu) au clic extérieur ou touche Échap
   useEffect(() => {
@@ -980,60 +937,6 @@ export const Board: React.FC = () => {
       </header>
 
       {/* =====================================================================
-          ONGLETS RAPIDES MOBILE (< 768px) : JT 20H | HÉMICYCLE | LA RUE
-      ===================================================================== */}
-      <nav
-        aria-label="Terrains de campagne"
-        className="flex md:hidden items-center gap-1 mb-1 shrink-0 w-full"
-      >
-        {gameState.lanes.map((lane) => {
-          const shortTitle =
-            lane.id === 'lane-jt-20h'
-              ? 'JT 20H'
-              : lane.id === 'lane-hemicycle'
-              ? 'HÉMICYCLE'
-              : 'LA RUE';
-          const pScore = getLaneTotalCharisma(lane, 'PLAYER', gameState.lanes);
-          const aScore = getLaneTotalCharisma(lane, 'AI', gameState.lanes);
-          const isCurrent = activeMobileLaneId === lane.id;
-
-          return (
-            <button
-              key={lane.id}
-              type="button"
-              aria-current={isCurrent ? 'location' : undefined}
-              onClick={() => {
-                setActiveMobileLaneId(lane.id);
-                document.getElementById(lane.id)?.scrollIntoView({
-                  behavior: 'smooth',
-                  inline: 'start',
-                  block: 'nearest',
-                });
-              }}
-              className={`flex-1 min-w-0 py-1 px-1.5 border-2 border-ink font-mono text-[10px] font-black uppercase flex items-center justify-between transition-colors cursor-pointer ${
-                isCurrent
-                  ? 'bg-ink text-paper shadow-press-sm'
-                  : 'bg-paper-light text-ink opacity-80'
-              }`}
-            >
-              <span className="truncate">{shortTitle}</span>
-              <span
-                className={`ml-1 px-1 py-0.2 text-[9px] border border-current shrink-0 ${
-                  pScore > aScore
-                    ? 'bg-royal text-white'
-                    : aScore > pScore
-                    ? 'bg-crimson text-white'
-                    : ''
-                }`}
-              >
-                {pScore}-{aScore}
-              </span>
-            </button>
-          );
-        })}
-      </nav>
-
-      {/* =====================================================================
           BANDEAU FIN CONTEXTUEL OU FLASH AFP (3 SECONDES)
       ===================================================================== */}
       {(selectedCard || statusBanner || (showFlashInfo && latestLog)) && (
@@ -1250,14 +1153,12 @@ export const Board: React.FC = () => {
       </AnimatePresence>
 
       {/* =====================================================================
-          3. PLATEAU CENTRAL : 3 TERRAINS (SCROLL HORIZONTAL SNAP SUR MOBILE,
-          GRILLE 3 COLONNES SUR DESKTOP)
+          3. PLATEAU CENTRAL : 3 TERRAINS CÔTE À CÔTE EN PERMANENCE
       ===================================================================== */}
       <main
-        ref={lanesScrollerRef}
         tabIndex={0}
         aria-label="Terrains de campagne"
-        className="flex md:grid md:grid-cols-3 overflow-x-auto md:overflow-visible overflow-y-hidden snap-x snap-mandatory gap-2.5 md:gap-3.5 mb-1 md:mb-1.5 flex-1 min-h-0 w-full"
+        className="grid grid-cols-3 gap-1 sm:gap-2 md:gap-3.5 mb-1 flex-1 min-h-0 w-full overflow-hidden"
       >
         {gameState.lanes.map((lane) => (
           <LaneComponent
@@ -1291,7 +1192,7 @@ export const Board: React.FC = () => {
       </main>
 
       {/* =====================================================================
-          4. BARRE INFÉRIEURE : MAIN COMPACTE + BARRE D'ACTION SUR 1 SEULE LIGNE
+          4. BARRE INFÉRIEURE : MAIN EN ÉVENTAIL COMPACT + BARRE D'ACTION
       ===================================================================== */}
       <footer
         onDragOver={(e) => {
@@ -1336,12 +1237,37 @@ export const Board: React.FC = () => {
           )}
         </AnimatePresence>
 
+        {/* Petit bandeau clair au-dessus de la main résumant le pouvoir de la carte sélectionnée */}
+        <AnimatePresence>
+          {selectedCard && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              className="w-full mb-1 py-0.5 px-2 bg-paper-light border border-ink text-[10px] md:text-xs font-mono text-ink flex items-center justify-between shadow-press-sm shrink-0"
+            >
+              <span className="truncate">
+                <strong className="text-royal">{selectedCard.name}</strong>{' '}
+                <span className="text-crimson font-bold">[{selectedCard.effect.name}]</span> :{' '}
+                {selectedCard.effect.description}
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedCardId(null)}
+                className="ml-1 text-[9px] font-mono font-bold uppercase underline hover:text-crimson shrink-0 cursor-pointer"
+              >
+                Fermer
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-1.5 md:gap-2 w-full min-w-0">
-          {/* Cartes en main en carrousel horizontal compact sur mobile */}
-          <div className="flex-1 flex flex-nowrap items-center justify-start md:justify-center gap-1.5 sm:gap-2.5 overflow-x-auto py-0.5 min-w-0 w-full">
+          {/* Cartes en main en éventail compact avec léger chevauchement négatif (-space-x-3) */}
+          <div className="flex-1 flex flex-nowrap items-center justify-center -space-x-3 sm:-space-x-1.5 md:space-x-2 py-0.5 min-w-0 w-full overflow-visible">
             {gameState.playerHand.length === 0 ? (
-              <div className="py-3 px-2 text-center font-mono text-[11px] md:text-xs text-ink-muted italic w-full">
-                Aucune carte en main — touchez « FIN TOUR » pour piocher jusqu&apos;à 3 cartes.
+              <div className="py-2.5 px-2 text-center font-mono text-[11px] md:text-xs text-ink-muted italic w-full">
+                Aucune carte en main — touchez « FIN TOUR » pour piocher.
               </div>
             ) : (
               gameState.playerHand.map((card, index) => {
@@ -1372,7 +1298,7 @@ export const Board: React.FC = () => {
             )}
           </div>
 
-          {/* Barre de contrôle sur UNE SEULE LIGNE compacte (w-full text-xs sur mobile) */}
+          {/* Barre de contrôle sur UNE SEULE LIGNE compacte */}
           <div className="w-full lg:w-auto flex items-center justify-between lg:justify-end gap-1.5 shrink-0 border-t lg:border-t-0 lg:border-l-2 border-ink/30 pt-1 lg:pt-0 lg:pl-3 text-xs">
             {/* Indicateur Capital 1/1 */}
             <div
@@ -1435,7 +1361,7 @@ export const Board: React.FC = () => {
                 <span>Presse x2</span>
               </button>
 
-              {/* Bouton principal FIN TOUR 1/8 (ne dépasse jamais du bord droit) */}
+              {/* Bouton principal FIN TOUR 1/8 */}
               <button
                 type="button"
                 disabled={gameState.phase !== 'PLAYER_ACTION' || isDebating}
