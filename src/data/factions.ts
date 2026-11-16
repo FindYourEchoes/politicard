@@ -1,383 +1,308 @@
-import { FactionId, FactionInfo, CardDefinition, CardRank } from '../types/duel';
+import { FactionId, FactionInfo, CardDefinition, CardRank, DebateTheme } from '../types/duel';
+
+export const THEME_DETAILS: Record<DebateTheme, { title: string; subtitle: string; badge: string; color: string }> = {
+  CLASSIQUE: {
+    title: 'Débat Classique',
+    subtitle: 'Règles et pouvoirs normaux',
+    badge: 'STANDARD',
+    color: 'border-slate-700 bg-slate-900 text-slate-300'
+  },
+  SONDAGE_INVERSE: {
+    title: 'Sondage Inversé',
+    subtitle: 'La plus faible force l’emporte !',
+    badge: 'INVERSION',
+    color: 'border-amber-500/60 bg-amber-950/80 text-amber-300'
+  },
+  FACE_A_FACE_BRUT: {
+    title: 'Face-à-Face Brut',
+    subtitle: 'Tous les pouvoirs sont désactivés',
+    badge: 'FORCE PURE',
+    color: 'border-red-500/60 bg-red-950/80 text-red-300'
+  },
+  PRIME_TIME: {
+    title: 'Prime Time x2',
+    subtitle: '+1 point bonus dans le pot',
+    badge: 'BONUS POT',
+    color: 'border-emerald-500/60 bg-emerald-950/80 text-emerald-300'
+  }
+};
 
 export const FACTIONS: Record<FactionId, FactionInfo> = {
-  revolution_permanente: {
-    id: 'revolution_permanente',
-    name: 'Révolution Permanente',
-    shortName: 'Rév. Permanente',
-    ideology: 'Extrême Gauche',
+  extreme_gauche: {
+    id: 'extreme_gauche',
+    name: 'Extrême Gauche Révolutionnaire',
+    shortName: 'Extrême Gauche',
+    ideology: 'Révolutionnaire',
     color: '#DC2626',
     accentColor: '#991B1B',
-    bgGradient: 'from-red-900 via-rose-900 to-red-950',
-    cardBg: 'bg-red-950',
-    borderColor: 'border-red-600',
-    textColor: 'text-red-500',
-    badgeBg: 'bg-red-600',
     iconName: 'Megaphone',
-    slogan: 'Grand Soir garanti dès demain matin, ou grève générale illimitée !',
-    description: 'Abolition immédiate du grand capital, réquisition des chaînes d’info et barricades en carton recyclé.',
+    slogan: 'Grand Soir garanti dès demain, grève générale illimitée !',
     candidateName: 'Nathalie Rouget'
   },
-  union_populaire: {
-    id: 'union_populaire',
-    name: 'Union Populaire & Insoumise',
-    shortName: 'Union Populaire',
+  gauche_insoumise: {
+    id: 'gauche_insoumise',
+    name: 'Gauche Insoumise',
+    shortName: 'Insoumis',
     ideology: 'Gauche Radicale',
     color: '#E11D48',
     accentColor: '#0284C7',
-    bgGradient: 'from-rose-900 via-sky-950 to-indigo-950',
-    cardBg: 'bg-rose-950',
-    borderColor: 'border-rose-500',
-    textColor: 'text-rose-400',
-    badgeBg: 'bg-rose-600',
     iconName: 'Zap',
     slogan: 'La République, c’est nous ! Et la 6e République aussi !',
-    description: 'Bifurcation citoyenne, hologrammes en meeting et hausse d’impôt sur les super-profits imaginaires.',
-    candidateName: 'Jean-Luc Mélenchonix'
+    candidateName: 'Jean-Luc Le Tribun'
   },
-  social_democratie: {
-    id: 'social_democratie',
-    name: 'Social-Démocratie Historique',
-    shortName: 'Social-Démocratie',
-    ideology: 'Gauche Modérée',
-    color: '#F43F5E',
+  parti_communiste: {
+    id: 'parti_communiste',
+    name: 'Parti Communiste',
+    shortName: 'Communistes',
+    ideology: 'Gauche Populaire',
+    color: '#B91C1C',
+    accentColor: '#991B1B',
+    iconName: 'Flame',
+    slogan: 'La bonne viande, le vin rouge et les jours heureux !',
+    candidateName: 'Fabien Du Barbecue'
+  },
+  ecologistes: {
+    id: 'ecologistes',
+    name: 'Les Écologistes',
+    shortName: 'Écologistes',
+    ideology: 'Écologie Politique',
+    color: '#16A34A',
+    accentColor: '#15803D',
+    iconName: 'Leaf',
+    slogan: 'Déconstruction, vélos cargo et zéro bitume !',
+    candidateName: 'Marine Du Zéro Carbone'
+  },
+  parti_socialiste: {
+    id: 'parti_socialiste',
+    name: 'Parti Socialiste',
+    shortName: 'Socialistes',
+    ideology: 'Social-Démocratie',
+    color: '#EC4899',
     accentColor: '#BE123C',
-    bgGradient: 'from-pink-900 via-rose-950 to-stone-900',
-    cardBg: 'bg-pink-950',
-    borderColor: 'border-pink-500',
-    textColor: 'text-pink-400',
-    badgeBg: 'bg-pink-600',
     iconName: 'Flower2',
-    slogan: 'Un compromis historique entre la synthèse du consensus et le compromis.',
-    description: 'Le sens du compromis modéré, 40 congrès internes par an et l’éternel fantôme de mai 1981.',
-    candidateName: 'Olivier Fauredent'
+    slogan: 'Le compromis historique entre la synthèse et le consensus.',
+    candidateName: 'Olivier Des Synthèses'
   },
   bloc_central: {
     id: 'bloc_central',
-    name: 'Bloc Central & Technocrate',
+    name: 'Bloc Central & Majorité',
     shortName: 'Bloc Central',
-    ideology: 'Centre / Majorité',
+    ideology: 'Centre Technocrate',
     color: '#F59E0B',
     accentColor: '#2563EB',
-    bgGradient: 'from-amber-900 via-blue-950 to-slate-900',
-    cardBg: 'bg-amber-950',
-    borderColor: 'border-amber-500',
-    textColor: 'text-amber-400',
-    badgeBg: 'bg-amber-600',
     iconName: 'Sparkles',
-    slogan: 'En même temps disruptif, régalien et profondément pragmatique.',
-    description: 'Gouvernance agile, ordonnances pédagogiques et 42 rapports McKinsey pour décider du menu de midi.',
+    slogan: 'En même temps disruptif, régalien et pragmatique.',
     candidateName: 'Emmanuel Jupiter'
   },
   droite_republicaine: {
     id: 'droite_republicaine',
     name: 'Droite Républicaine',
-    shortName: 'Droite Républicaine',
+    shortName: 'Droite Rép.',
     ideology: 'Droite Classique',
     color: '#2563EB',
     accentColor: '#1E3A8A',
-    bgGradient: 'from-blue-900 via-indigo-950 to-slate-950',
-    cardBg: 'bg-blue-950',
-    borderColor: 'border-blue-500',
-    textColor: 'text-blue-400',
-    badgeBg: 'bg-blue-600',
     iconName: 'Landmark',
-    slogan: 'L’ordre, le travail, le mérite... et les costumes sur mesure.',
-    description: 'Baisse des dépenses publiques (sauf chez nous), gaullisme patrimonial et dîners du Siècle.',
-    candidateName: 'Laurent Wauquillard'
+    slogan: 'L’ordre, le travail, le mérite... et les beaux costumes.',
+    candidateName: 'Laurent Des Notables'
   },
-  union_nationale: {
-    id: 'union_nationale',
-    name: 'Union Nationale & Souverainiste',
-    shortName: 'Union Nationale',
-    ideology: 'Droite Nationale',
+  droite_liberale: {
+    id: 'droite_liberale',
+    name: 'Droite Libérale',
+    shortName: 'Libéraux',
+    ideology: 'Droite Conservatrice',
+    color: '#6366F1',
+    accentColor: '#4338CA',
+    iconName: 'TrendingUp',
+    slogan: 'Moins d’impôts, plus de caméras et débats sur CNews.',
+    candidateName: 'Éric De La Reconquête'
+  },
+  souverainistes: {
+    id: 'souverainistes',
+    name: 'Souverainistes de France',
+    shortName: 'Souverainistes',
+    ideology: 'Souverainisme',
     color: '#0284C7',
-    accentColor: '#1E293B',
-    bgGradient: 'from-sky-950 via-slate-900 to-slate-950',
-    cardBg: 'bg-slate-900',
-    borderColor: 'border-sky-500',
-    textColor: 'text-sky-400',
-    badgeBg: 'bg-sky-600',
+    accentColor: '#0369A1',
     iconName: 'ShieldAlert',
-    slogan: 'Les frontières d’abord, le bon sens paysan et le JT de 13h !',
-    description: 'Protectionnisme intégral, dénonciation de Bruxelles et selfies avec des éleveurs de charolaises.',
-    candidateName: 'Marine La Penne'
+    slogan: 'La France d’abord, les frontières et le Frexit tranquille !',
+    candidateName: 'Nicolas Du Pont de l’Île'
+  },
+  rassemblement_national: {
+    id: 'rassemblement_national',
+    name: 'Rassemblement National',
+    shortName: 'Rassemblement',
+    ideology: 'Droite Nationale',
+    color: '#1E3A8A',
+    accentColor: '#0F172A',
+    iconName: 'ShieldCheck',
+    slogan: 'Le bon sens paysan, le JT de 13h et la priorité nationale !',
+    candidateName: 'Jordan Du Micro'
   }
 };
 
-export const ROLE_BLUEPRINTS: Record<CardRank, {
-  roleTitle: string;
+export const ROLE_DEFINITIONS: Record<CardRank, {
+  roleBadge: string;
   shortPower: string;
   detailedPower: string;
 }> = {
   7: {
-    roleTitle: 'Le / La Candidate Présidentiel(le)',
-    shortPower: 'Immunité totale (force et pouvoir protégés)',
-    detailedPower: 'Immunité totale : son pouvoir et sa force ne peuvent être annulés par le Spin Doctor adverse.'
+    roleBadge: 'CANDIDAT',
+    shortPower: 'Immunité totale',
+    detailedPower: 'Immunité : force et pouvoir ne peuvent être annulés.'
   },
   6: {
-    roleTitle: 'Le / La Lieutenante (Bras Droit)',
-    shortPower: 'Victoire : +2 en force pour votre prochain round',
-    detailedPower: 'Si vous gagnez ce round, votre prochaine carte jouée bénéficiera de +2 en force brute au tour suivant.'
+    roleBadge: 'LIEUTENANT',
+    shortPower: 'Gagne = +2 suivant',
+    detailedPower: 'Si victorieux, votre prochain round a +2 en force.'
   },
   5: {
-    roleTitle: 'Le Spin Doctor (Conseiller de l’Ombre)',
-    shortPower: 'Annule le pouvoir spécial de la carte adverse',
-    detailedPower: 'Annule complètement le pouvoir spécial adverse sur ce round (sauf contre le Candidat 7 immunisé).'
+    roleBadge: 'SPIN DOCTOR',
+    shortPower: 'Annule le pouvoir adverse',
+    detailedPower: 'Neutralise le pouvoir spécial de la carte adverse.'
   },
   4: {
-    roleTitle: 'L’Attaché(e) de Presse',
-    shortPower: 'Bouclier : défaite annulée (égalité forcée)',
-    detailedPower: 'Bouclier médiatique : si vous perdez ce round, l’adversaire ne marque rien. Égalité forcée, le point va au pot !'
+    roleBadge: 'BOUCLIER',
+    shortPower: 'Défaite = Égalité forcée',
+    detailedPower: 'Si vous perdez ce round, transforme en égalité.'
   },
   3: {
-    roleTitle: 'Le Sondeur / L’Influenceur',
-    shortPower: 'Inversion des courbes (la force faible l’emporte)',
-    detailedPower: 'Inversion des courbes : sur ce round, c’est la carte avec la force la PLUS FAIBLE qui remporte le duel !'
+    roleBadge: 'SONDEUR',
+    shortPower: 'Le plus faible gagne',
+    detailedPower: 'Inversion : la force la plus basse remporte le duel.'
   },
   2: {
-    roleTitle: 'Le / La Militante de Terrain',
-    shortPower: 'Victoire automatique en cas d’égalité',
-    detailedPower: 'Mobilisation : si les forces sont à égalité sur ce round, vous remportez automatiquement la manche.'
+    roleBadge: 'MILITANT',
+    shortPower: 'Égalité = Victoire',
+    detailedPower: 'En cas d’égalité de score, vous gagnez la manche.'
   },
   1: {
-    roleTitle: 'La Casserole / Le Dossier Noir',
-    shortPower: 'Élimine le 7 ou le 6 adverse (+2 pts d’Opinion !)',
-    detailedPower: 'Scandale d’État : si l’adversaire joue son rang 7 ou 6, vous l’éliminez net et encaissez +2 pts d’Opinion d’un coup !'
+    roleBadge: 'CASSEROLE',
+    shortPower: 'Bat le 7 et 6',
+    detailedPower: 'Élimine le 7 ou 6 adverse et offre +2 pts d’Opinion !'
   },
   0: {
-    roleTitle: 'La Gaffe en Direct / Le Stagiaire',
-    shortPower: 'Round perdu, mais espionne toute la main adverse',
-    detailedPower: 'Vous perdez ce round d’office, mais vous infiltrez les coulisses : révèle toutes les cartes restantes de l’IA !'
+    roleBadge: 'GAFFE',
+    shortPower: 'Révèle la main IA',
+    detailedPower: 'Perd d’office ce tour, mais espionne la main de l’IA.'
   }
 };
 
-export const FACTION_CARD_FLAVORS: Record<FactionId, Record<CardRank, { name: string; quote: string }>> = {
-  revolution_permanente: {
-    7: {
-      name: 'Nathalie la Porte-Parole',
-      quote: '« Camarades, nous ne débattrons pas avec le grand patronat : nous prendrons les clés ! »'
-    },
-    6: {
-      name: 'Le Délégué CGT des Barricades',
-      quote: '« La raffinerie est bloquée, le périph aussi. On maintient la cadence ! »'
-    },
-    5: {
-      name: 'Le Théoricien de l’Agit-Prop',
-      quote: '« La dialectique matérialiste neutralise tout discours bourgeois contradictoire. »'
-    },
-    4: {
-      name: 'La Responsable des Tracts',
-      quote: '« Même si l’on perd l’antenne, nos 50 000 tracts sont déjà dans les gares. Zéro point pour eux ! »'
-    },
-    3: {
-      name: 'Le Blogueur Anti-Système',
-      quote: '« Moins on nous invite dans les médias, plus notre légitimité révolutionnaire explose ! »'
-    },
-    2: {
-      name: 'Le Colleur d’Affiches Nocturne',
-      quote: '« De la colle à papier peint plein les doigts, 4 heures de colle par nuit : on ne lâche rien. »'
-    },
-    1: {
-      name: 'L’Exclusion pour Déviationnisme',
-      quote: '« Camarade, nous avons retrouvé un compte épargne à ton nom. Auto-critique immédiate ! »'
-    },
-    0: {
-      name: 'Le Couac sur BFM TV',
-      quote: '« J’ai confondu la dette publique avec le budget cantine... mais la révolution est en marche ! »'
-    }
+export const FACTION_NAMES: Record<FactionId, Record<CardRank, string>> = {
+  extreme_gauche: {
+    7: 'La Porte-Parole',
+    6: 'Le Délégué CGT',
+    5: 'L’Agitateur',
+    4: 'Le Tracteur',
+    3: 'Le Blogueur',
+    2: 'Le Colleur',
+    1: 'La Casserole',
+    0: 'La Gaffe TV'
   },
-  union_populaire: {
-    7: {
-      name: 'Le Tribun Suprême',
-      quote: '« Qu’ils s’en aillent tous ! La République, le souffle civique, c’est moi ! »'
-    },
-    6: {
-      name: 'La Députée de Piquet',
-      quote: '« On a déposé 4 000 sous-amendements cette nuit. Le train des réformes est stoppé net ! »'
-    },
-    5: {
-      name: 'Le Stratège des Mèmes TikTok',
-      quote: '« Une vidéo de 15 secondes avec un montage trap, et l’argument adverse est annihilé. »'
-    },
-    4: {
-      name: 'L’Attaché aux Éléments de Langage',
-      quote: '« Ce n’est pas une défaite, c’est une manœuvre de résistance républicaine ! Circulez ! »'
-    },
-    3: {
-      name: 'L’Institut Populaire des Sondages',
-      quote: '« Les sondages officiels mentent. Dans notre sondage interne sur Telegram, nous sommes à 94 %. »'
-    },
-    2: {
-      name: 'La Caravane des Quartiers',
-      quote: '« On fait du porte-à-porte jusqu’au 18e étage sans ascenseur. C’est ça, le peuple en marche. »'
-    },
-    1: {
-      name: 'L’Appartement Social Non Déclaré',
-      quote: '« Une omission administrative de 140 m² qui fait s’effondrer le grand favori du scrutin ! »'
-    },
-    0: {
-      name: 'Le Tweet Furieux de 3h du Matin',
-      quote: '« Des majuscules, de la ponctuation agressive... Oups, le stagiaire a cliqué sur publier. »'
-    }
+  gauche_insoumise: {
+    7: 'Le Tribun',
+    6: 'La Députée',
+    5: 'Le Stratège TikTok',
+    4: 'Le Débunkueur',
+    3: 'Le Sondage Interne',
+    2: 'La Caravane',
+    1: 'Le Logement Caché',
+    0: 'Le Tweet de 3h'
   },
-  social_democratie: {
-    7: {
-      name: 'Le Premier Secrétaire',
-      quote: '« La synthèse de la motion B sur l’amendement C permet un rassemblement loyal et mesuré. »'
-    },
-    6: {
-      name: 'L’Ancien Premier Ministre',
-      quote: '« L’expérience de l’État ne s’improvise pas. Je connais chaque couloir de Matignon. »'
-    },
-    5: {
-      name: 'Le Rédacteur de Synthèses Floues',
-      quote: '« En rendant la conclusion incompréhensible pour les deux camps, j’annule toute contestation. »'
-    },
-    4: {
-      name: 'L’Éditorialiste Complaisant',
-      quote: '« Certes les chiffres sont mauvais, mais la dignité du port de costume reste intacte. Match nul. »'
-    },
-    3: {
-      name: 'Le Politologue de France Inter',
-      quote: '« Quand les courbes s’inversent, c’est le candidat le plus tiède qui recueille l’adhésion secrète. »'
-    },
-    2: {
-      name: 'Le Maire Rural Indéboulonnable',
-      quote: '« 35 ans de mandat, j’ai inauguré le rond-point et le boulodrome. En cas d’égalité, je passe. »'
-    },
-    1: {
-      name: 'Le Compte Secret à Genève',
-      quote: '« Les yeux dans les yeux, je vous dis que ce compte n’existait pas... jusqu’à ce matin. »'
-    },
-    0: {
-      name: 'L’Oubli du Nom du Candidat',
-      quote: '« Je soutiens chaleureusement notre champion... dont le nom m’échappe pour le moment. »'
-    }
+  parti_communiste: {
+    7: 'Le Secrétaire',
+    6: 'Le Métallo',
+    5: 'L’Édito l’Huma',
+    4: 'Le Porte-Drapeau',
+    3: 'L’Écho Populaire',
+    2: 'Le Camarade Fête',
+    1: 'Le Banquet Oublié',
+    0: 'Le Micro Ouvert'
+  },
+  ecologistes: {
+    7: 'Le Maire Vert',
+    6: 'La Députée Climat',
+    5: 'Le Conseiller Vélo',
+    4: 'La Plume Bio',
+    3: 'L’Index Éco',
+    2: 'Le Zadiste',
+    1: 'Le Vol en Avion',
+    0: 'Le Couac Éolien'
+  },
+  parti_socialiste: {
+    7: 'L’Ancien Ministre',
+    6: 'Le Député Sortant',
+    5: 'Le Rédacteur Flou',
+    4: 'L’Éditorialiste',
+    3: 'Le Baromètre',
+    2: 'Le Maire Rural',
+    1: 'Le Compte Suisse',
+    0: 'L’Oubli du Nom'
   },
   bloc_central: {
-    7: {
-      name: 'Le Président Jupiter',
-      quote: '« Je traverse la rue, je disrupte le débat et je transcende les vieux clivages du monde d’avant. »'
-    },
-    6: {
-      name: 'Le Ministre de l’Attractivité',
-      quote: '« Un sommet Choose France avec buffet bio : le prochain tour démarre avec +2 de croissance ! »'
-    },
-    5: {
-      name: 'Le Senior Partner McKinsey',
-      quote: '« Nous avons benchmarqué les argumentaires : la slide 42 débranche toute offensive adverse. »'
-    },
-    4: {
-      name: 'La Porte-Parole du Gouvernement',
-      quote: '« Ce n’est pas un échec, c’est que les Français n’étaient pas assez mûrs pour la pédagogie. Zéro point ! »'
-    },
-    3: {
-      name: 'Le Data Scientist de l’INSEE',
-      quote: '« Selon nos modèles bayésiens, plus un chiffre est faible, plus la dynamique d’innovation est forte ! »'
-    },
-    2: {
-      name: 'Le Marcheur de la Première Heure',
-      quote: '« Baskets blanches, badge tech et enthousiasme managérial. On gagne toujours les balles au centre. »'
-    },
-    1: {
-      name: 'Le Rétro-Commissionnement BFM',
-      quote: '« Un montage de cabinets-conseils à 1,8 milliard d’euros. Le patron vient de démissionner en direct. »'
-    },
-    0: {
-      name: 'La Petite Phrase sur les Gares',
-      quote: '« Il y a ceux qui réussissent et ceux qui ne sont rien... Oups, le micro était resté ouvert. »'
-    }
+    7: 'Le Président',
+    6: 'Le Premier Ministre',
+    5: 'Le Senior McKinsey',
+    4: 'La Porte-Parole',
+    3: 'L’Indice Stat',
+    2: 'Le Marcheur',
+    1: 'Le Montage Conseil',
+    0: 'La Phrase Choc'
   },
   droite_republicaine: {
-    7: {
-      name: 'Le Baron des Hauts-de-Seine',
-      quote: '« La valeur travail, le sens de l’effort et le respect absolu de la parole de nos anciens. »'
-    },
-    6: {
-      name: 'Le Directeur de Campagne Gaulliste',
-      quote: '« Une poignée de main virile sur le marché de Neuilly, et notre momentum est relancé ! »'
-    },
-    5: {
-      name: 'Le Communicant du 16e Arrondissement',
-      quote: '« Un coup de fil au rédacteur en chef de Figaro Mag et le dossier adverse part à la poubelle. »'
-    },
-    4: {
-      name: 'La Plume des Valeurs Bourgeoises',
-      quote: '« Le tribunal de l’opinion peut bien siffler, notre respectabilité institutionnelle étouffe l’affaire. »'
-    },
-    3: {
-      name: 'Le Chroniqueur Économique Libéral',
-      quote: '« Moins l’État intervient, mieux se porte le pays ! Moins c’est gros, plus c’est efficace ! »'
-    },
-    2: {
-      name: 'Le Trésorier Notaire de Province',
-      quote: '« Les cotisations sont à jour depuis 1974. En cas de ballottage, la tradition l’emporte toujours. »'
-    },
-    1: {
-      name: 'L’Emploi Fictif de l’Épouse & Costumes',
-      quote: '« Deux costumes offerts par un ami mécène et une assistante parlementaire invisible. Rideau ! »'
-    },
-    0: {
-      name: 'Le Pain au Chocolat à 10 Centimes',
-      quote: '« Je ne prends pas le métro, mais je sais qu’une baguette coûte approximativement 8 sous. »'
-    }
+    7: 'Le Baron Local',
+    6: 'Le Directeur',
+    5: 'Le Communicant',
+    4: 'La Plume Figaro',
+    3: 'L’Analyste Libéral',
+    2: 'Le Notaire Local',
+    1: 'L’Emploi Fictif',
+    0: 'Le Pain Chocolat'
   },
-  union_nationale: {
-    7: {
-      name: 'La Présidente Patriote',
-      quote: '« Au nom du peuple français et des terroirs oubliés, nous allons rendre la France aux Français ! »'
-    },
-    6: {
-      name: 'Le Numéro Deux de Plateau',
-      quote: '« Cravate impeccable, sourire goguenard : l’offensive médiatique du prochain tour est amorcée ! »'
-    },
-    5: {
-      name: 'Le Polémiste Vedette de CNews',
-      quote: '« En 30 secondes d’indignation sur le plateau du soir, toute l’argumentation bien-pensante est pulvérisée. »'
-    },
-    4: {
-      name: 'Le Rédacteur du Mensuel Souverainiste',
-      quote: '« Qu’importe le vote des juges parisiens ! Le verdict populaire est gelé : aucun point concédé. »'
-    },
-    3: {
-      name: 'L’Influenceur Réinformation',
-      quote: '« Les instituts officiels sont à la solde des mondialistes ! Les derniers seront les premiers ! »'
-    },
-    2: {
-      name: 'Le Gardien du Terroir et Chasseurs',
-      quote: '« Présent à chaque foire au boudin, on connaît tous les maires de canton. On ne lâche pas un pouce. »'
-    },
-    1: {
-      name: 'Le Prêt Russe Non Remboursé',
-      quote: '« Un chèque en roubles signé à l’ambassade qui refait surface au JT de 20 heures... Catastrophe ! »'
-    },
-    0: {
-      name: 'La Mauvaise Fiche sur le SMIC et l’Écu',
-      quote: '« Attendez, je confonds le franc, l’écu et les cotisations... Où sont passées mes notes jaunes ? »'
-    }
+  droite_liberale: {
+    7: 'Le Polémiste',
+    6: 'Le Lieutenant TV',
+    5: 'Le Stratège Digital',
+    4: 'Le Chroniqueur',
+    3: 'Le Grand Sondage',
+    2: 'Le Jeune Militant',
+    1: 'Le Prêt Douteux',
+    0: 'La Fausse Citation'
+  },
+  souverainistes: {
+    7: 'Le Patriote Chef',
+    6: 'Le Député Souverain',
+    5: 'Le Douanier Chef',
+    4: 'Le Rédacteur Libre',
+    3: 'La Voix Terroir',
+    2: 'Le Gardien Borne',
+    1: 'L’Annexe Cachée',
+    0: 'La Fiche Échappée'
+  },
+  rassemblement_national: {
+    7: 'La Présidente',
+    6: 'Le Numéro Deux',
+    5: 'Le Chroniqueur TV',
+    4: 'Le Porte-Voix',
+    3: 'L’Observateur',
+    2: 'Le Délégué Canton',
+    1: 'L’Emprunt Russe',
+    0: 'L’Erreur de Fiche'
   }
 };
 
-/**
- * Generate full 8 cards for a given faction
- */
 export function generateFactionDeck(factionId: FactionId): CardDefinition[] {
   const ranks: CardRank[] = [7, 6, 5, 4, 3, 2, 1, 0];
-  const flavor = FACTION_CARD_FLAVORS[factionId];
+  const names = FACTION_NAMES[factionId];
 
   return ranks.map((rank) => {
-    const blueprint = ROLE_BLUEPRINTS[rank];
-    const itemFlavor = flavor[rank];
-
+    const role = ROLE_DEFINITIONS[rank];
     return {
       rank,
       baseForce: rank,
-      name: itemFlavor.name,
-      roleTitle: blueprint.roleTitle,
-      shortPower: blueprint.shortPower,
-      detailedPower: blueprint.detailedPower,
-      quote: itemFlavor.quote,
+      name: names[rank],
+      roleBadge: role.roleBadge,
+      shortPower: role.shortPower,
+      detailedPower: role.detailedPower,
       factionId
     };
   });

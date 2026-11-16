@@ -1,21 +1,30 @@
 export type FactionId =
-  | 'revolution_permanente'
-  | 'union_populaire'
-  | 'social_democratie'
+  | 'extreme_gauche'
+  | 'gauche_insoumise'
+  | 'parti_communiste'
+  | 'ecologistes'
+  | 'parti_socialiste'
   | 'bloc_central'
   | 'droite_republicaine'
-  | 'union_nationale';
+  | 'droite_liberale'
+  | 'souverainistes'
+  | 'rassemblement_national';
 
 export type CardRank = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
+export type DebateTheme =
+  | 'CLASSIQUE'
+  | 'SONDAGE_INVERSE'
+  | 'FACE_A_FACE_BRUT'
+  | 'PRIME_TIME';
 
 export interface CardDefinition {
   rank: CardRank;
   baseForce: number;
   name: string;
-  roleTitle: string;
+  roleBadge: string;
   shortPower: string;
   detailedPower: string;
-  quote: string;
   factionId: FactionId;
 }
 
@@ -26,14 +35,8 @@ export interface FactionInfo {
   ideology: string;
   color: string;
   accentColor: string;
-  bgGradient: string;
-  cardBg: string;
-  borderColor: string;
-  textColor: string;
-  badgeBg: string;
   iconName: string;
   slogan: string;
-  description: string;
   candidateName: string;
 }
 
@@ -42,12 +45,11 @@ export type RoundVerdict =
   | 'AI_WIN'
   | 'TIE'
   | 'SCANDALE_PLAYER'
-  | 'SCANDALE_AI'
-  | 'CANCELLED_PLAYER'
-  | 'CANCELLED_AI';
+  | 'SCANDALE_AI';
 
 export interface RoundResult {
   roundNumber: number;
+  theme: DebateTheme;
   playerCard: CardDefinition;
   aiCard: CardDefinition;
   playerEffectiveForce: number;
@@ -73,8 +75,11 @@ export interface GameState {
   pot: number;
   currentRound: number;
   maxRounds: number;
+  roundTheme: DebateTheme;
   playerHand: CardDefinition[];
   aiHand: CardDefinition[];
+  playerPlayedRanks: CardRank[];
+  aiPlayedRanks: CardRank[];
   playerNextBonus: number;
   aiNextBonus: number;
   aiHandRevealed: boolean;
@@ -82,6 +87,6 @@ export interface GameState {
   aiPlayedCard: CardDefinition | null;
   currentRoundResult: RoundResult | null;
   roundHistory: RoundResult[];
-  phase: 'SELECT_CAMP' | 'ROUND_CHOOSE' | 'ROUND_REVEAL' | 'ROUND_VERDICT' | 'GAME_OVER';
+  phase: 'ROUND_CHOOSE' | 'ROUND_REVEAL' | 'ROUND_VERDICT' | 'GAME_OVER';
   winner: 'PLAYER' | 'AI' | 'DRAW' | null;
 }
