@@ -1,14 +1,14 @@
 export type FactionId =
-  | 'extreme_gauche'
-  | 'gauche_insoumise'
-  | 'parti_communiste'
-  | 'ecologistes'
-  | 'parti_socialiste'
+  | 'france_insoumise'
+  | 'rassemblement_national'
   | 'bloc_central'
-  | 'droite_republicaine'
-  | 'droite_liberale'
-  | 'souverainistes'
-  | 'rassemblement_national';
+  | 'place_publique_ps'
+  | 'les_republicains'
+  | 'reconquete'
+  | 'ecologistes'
+  | 'parti_communiste'
+  | 'lutte_ouvriere_npa'
+  | 'souverainistes';
 
 export type CardRank = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 

@@ -28,7 +28,7 @@ export function App() {
     setSelectedCard(null);
   };
 
-  // Play card towards the podium (via central button or drag-up)
+  // Play card towards the podium (via central button, double tap, or confirm)
   const handlePlayCard = (card: CardDefinition) => {
     if (!gameState || gameState.phase !== 'ROUND_CHOOSE') return;
 
@@ -82,7 +82,7 @@ export function App() {
     setSelectedCard(null);
   };
 
-  // 1. Initial State: Camp Selection Screen (10 Factions)
+  // 1. Initial State: Camp Selection Screen (10 Factions 2027)
   if (!gameState || !selectedPlayerFaction) {
     return <FactionSelectScreen onSelectFaction={handleSelectFaction} />;
   }
@@ -98,41 +98,43 @@ export function App() {
     );
   }
 
-  // 3. Central Debate Duel Game View (Strictly mobile-first: h-[100dvh] overflow-hidden)
+  // 3. Central Debate Duel Game View (max-w-2xl mx-auto w-full h-[100dvh])
   return (
-    <div className="relative w-full h-[100dvh] overflow-hidden bg-slate-950 text-slate-100 flex flex-col font-sans select-none">
-      {/* Top Header Bar with visual deduction pills */}
-      <TopBar
-        state={gameState}
-        onOpenRules={() => setIsRulesOpen(true)}
-        onRestart={handleChangeFaction}
-      />
+    <div className="w-full h-[100dvh] bg-black flex justify-center items-center overflow-hidden font-sans select-none">
+      <main className="max-w-2xl mx-auto w-full h-[100dvh] bg-slate-950 text-slate-100 flex flex-col justify-between overflow-hidden shadow-2xl border-x border-slate-800/60 relative">
+        {/* Top Header Bar with visual deduction pills */}
+        <TopBar
+          state={gameState}
+          onOpenRules={() => setIsRulesOpen(true)}
+          onRestart={handleChangeFaction}
+        />
 
-      {/* Center 1-Arena TV Stage with Debate Theme & single play button */}
-      <TVDebateArena
-        state={gameState}
-        onNextRound={handleNextRound}
-        selectedCard={selectedCard}
-        onPlaySelectedCard={() => {
-          if (selectedCard) handlePlayCard(selectedCard);
-        }}
-      />
+        {/* Center Compact 1-Arena TV Stage (Two slots face to face + Theme) */}
+        <TVDebateArena
+          state={gameState}
+          onNextRound={handleNextRound}
+          selectedCard={selectedCard}
+          onPlaySelectedCard={() => {
+            if (selectedCard) handlePlayCard(selectedCard);
+          }}
+        />
 
-      {/* Bottom Horizontal Player Hand with swipe-up support */}
-      <PlayerHand
-        cards={gameState.playerHand}
-        selectedCard={selectedCard}
-        onSelectCard={(card) => setSelectedCard(card)}
-        onPlayCard={handlePlayCard}
-        playerNextBonus={gameState.playerNextBonus}
-        disabled={gameState.phase !== 'ROUND_CHOOSE'}
-      />
+        {/* Bottom 4x2 Grid Hand (~45% of height, all 8 cards visible) */}
+        <PlayerHand
+          cards={gameState.playerHand}
+          selectedCard={selectedCard}
+          onSelectCard={(card) => setSelectedCard(card)}
+          onPlayCard={handlePlayCard}
+          playerNextBonus={gameState.playerNextBonus}
+          disabled={gameState.phase !== 'ROUND_CHOOSE'}
+        />
 
-      {/* Rules & Mirror Roles Cheat Sheet Modal */}
-      <RulesModal
-        isOpen={isRulesOpen}
-        onClose={() => setIsRulesOpen(false)}
-      />
+        {/* Rules & Mirror Roles Cheat Sheet Modal */}
+        <RulesModal
+          isOpen={isRulesOpen}
+          onClose={() => setIsRulesOpen(false)}
+        />
+      </main>
     </div>
   );
 }

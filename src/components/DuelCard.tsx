@@ -10,9 +10,9 @@ interface DuelCardProps {
   isPlayable?: boolean;
   bonusForce?: number;
   isCancelled?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'grid' | 'arena';
   onClick?: () => void;
-  showDetails?: boolean;
+  onDoubleClick?: () => void;
 }
 
 export const DuelCard: React.FC<DuelCardProps> = ({
@@ -22,9 +22,9 @@ export const DuelCard: React.FC<DuelCardProps> = ({
   isPlayable = false,
   bonusForce = 0,
   isCancelled = false,
-  size = 'md',
+  size = 'grid',
   onClick,
-  showDetails = true
+  onDoubleClick
 }) => {
   const faction = FACTIONS[card.factionId];
 
@@ -50,45 +50,36 @@ export const DuelCard: React.FC<DuelCardProps> = ({
   };
 
   if (isFaceDown) {
-    const sizeClasses = {
-      sm: 'w-[74px] h-[108px]',
-      md: 'w-[100px] h-[142px]',
-      lg: 'w-[130px] h-[185px]'
-    }[size];
-
     return (
       <div
-        className={`relative ${sizeClasses} rounded-xl bg-slate-900 border-2 border-slate-700 shadow-xl flex flex-col items-center justify-center select-none overflow-hidden`}
+        className="w-full h-full min-h-[90px] sm:min-h-[110px] rounded-xl bg-slate-900 border-2 border-slate-700 shadow-xl flex flex-col items-center justify-center select-none overflow-hidden"
       >
-        <Lock className="w-4 h-4 text-slate-500 mb-1" />
-        <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold">
+        <Lock className="w-5 h-5 text-slate-500 mb-1" />
+        <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold">
           SECRET
         </span>
       </div>
     );
   }
 
-  const containerClasses = {
-    sm: 'w-[76px] h-[110px] p-1.5',
-    md: 'w-[102px] sm:w-[118px] h-[148px] sm:h-[170px] p-2',
-    lg: 'w-[130px] sm:w-[155px] h-[190px] sm:h-[225px] p-2.5'
-  }[size];
+  const isArena = size === 'arena';
 
   return (
     <div
       onClick={isPlayable ? onClick : undefined}
-      className={`relative ${containerClasses} rounded-xl select-none flex flex-col justify-between transition-all duration-150 overflow-hidden cursor-pointer ${
+      onDoubleClick={isPlayable ? onDoubleClick : undefined}
+      className={`relative w-full h-full min-h-[92px] sm:min-h-[114px] rounded-xl select-none flex flex-col justify-between p-1.5 sm:p-2 transition-all duration-150 overflow-hidden cursor-pointer ${
         isSelected
-          ? 'ring-4 ring-amber-400 scale-105 shadow-2xl -translate-y-2 z-20'
+          ? 'ring-4 ring-amber-400 scale-[1.02] shadow-2xl -translate-y-1 z-20 bg-slate-850'
           : isPlayable
-          ? 'hover:-translate-y-1 hover:ring-2 hover:ring-amber-300 active:scale-95'
-          : 'opacity-90'
+          ? 'hover:-translate-y-0.5 hover:ring-2 hover:ring-amber-300 active:scale-95 bg-slate-900/90'
+          : 'opacity-90 bg-slate-900'
       } ${
         isCancelled ? 'grayscale brightness-75' : ''
-      } bg-slate-900 border-2 shadow-lg`}
+      } border-2 shadow-md`}
       style={{
         borderColor: isSelected ? '#FBBF24' : faction.color,
-        boxShadow: isSelected ? `0 0 16px rgba(251, 191, 36, 0.4)` : undefined
+        boxShadow: isSelected ? `0 0 16px rgba(251, 191, 36, 0.45)` : undefined
       }}
     >
       {/* 1. Top row: Big Number + Role Badge */}
@@ -97,52 +88,50 @@ export const DuelCard: React.FC<DuelCardProps> = ({
           className={`flex items-center justify-center font-black rounded-lg border shadow-sm ${getRankBadgeColor(
             card.rank
           )} ${
-            size === 'sm'
-              ? 'w-6 h-6 text-sm'
-              : size === 'md'
+            isArena
               ? 'w-7 h-7 sm:w-8 sm:h-8 text-base sm:text-lg'
-              : 'w-8 h-8 sm:w-10 sm:h-10 text-xl'
+              : 'w-6 h-6 sm:w-7 sm:h-7 text-sm sm:text-base'
           }`}
         >
           {card.rank}
         </div>
 
         {bonusForce > 0 && (
-          <span className="flex items-center gap-0.5 bg-emerald-500 text-slate-950 font-black px-1.5 py-0.5 rounded-full text-[9px]">
+          <span className="flex items-center gap-0.5 bg-emerald-500 text-slate-950 font-black px-1.5 py-0.5 rounded-full text-[9px] shadow-sm">
             <Sparkles className="w-2.5 h-2.5" />+{bonusForce}
           </span>
         )}
 
-        <span className="text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-wider text-slate-300 bg-slate-800/90 border border-slate-700 px-1 py-0.5 rounded">
+        <span className="text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-wider text-slate-200 bg-slate-800/95 border border-slate-700 px-1.5 py-0.5 rounded truncate max-w-[85px]">
           {card.roleBadge}
         </span>
       </div>
 
-      {/* 2. Middle: Short satirical name */}
-      <div className="my-auto text-center px-0.5">
+      {/* 2. Middle: Real political figure name */}
+      <div className="my-auto text-center px-0.5 py-1">
         <h4
           className={`font-black text-white leading-tight ${
-            size === 'sm' ? 'text-[9px]' : size === 'md' ? 'text-[11px] sm:text-xs' : 'text-xs sm:text-sm'
+            isArena
+              ? 'text-xs sm:text-sm'
+              : 'text-[11px] sm:text-xs'
           }`}
         >
           {card.name}
         </h4>
       </div>
 
-      {/* 3. Bottom: Short Power (4 words max) */}
-      {showDetails && (
-        <div
-          className={`rounded-lg p-1 text-center border ${
-            isCancelled
-              ? 'bg-red-950/60 border-red-800 text-red-300 text-[8px]'
-              : 'bg-slate-950/90 border-slate-800 text-amber-200/90 text-[8px] sm:text-[9px]'
-          }`}
-        >
-          <p className="font-bold leading-tight">
-            {isCancelled ? 'Pouvoir neutralisé' : card.shortPower}
-          </p>
-        </div>
-      )}
+      {/* 3. Bottom: Short Power (<= 4 words, high contrast) */}
+      <div
+        className={`rounded-md px-1 py-0.5 sm:py-1 text-center border ${
+          isCancelled
+            ? 'bg-red-950/80 border-red-800 text-red-300 text-[8px] sm:text-[9px]'
+            : 'bg-slate-950/90 border-slate-800 text-amber-300 text-[8px] sm:text-[9px]'
+        }`}
+      >
+        <p className="font-bold leading-none truncate">
+          {isCancelled ? 'Neutralisé' : card.shortPower}
+        </p>
+      </div>
     </div>
   );
 };
