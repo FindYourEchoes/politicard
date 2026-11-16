@@ -53,7 +53,7 @@ export const FACTIONS: Record<FactionId, FactionInfo> = {
   bloc_central: {
     id: 'bloc_central',
     name: 'Bloc Central (Renaissance / Horizons)',
-    shortName: 'Bloc Central',
+    shortName: 'CENTRE',
     ideology: 'Centre / Majorité',
     color: '#F59E0B',
     accentColor: '#D97706',
@@ -64,7 +64,7 @@ export const FACTIONS: Record<FactionId, FactionInfo> = {
   place_publique_ps: {
     id: 'place_publique_ps',
     name: 'Place Publique & Parti Socialiste',
-    shortName: 'PP / PS',
+    shortName: 'PS',
     ideology: 'Gauche Européenne',
     color: '#EC4899',
     accentColor: '#BE123C',
@@ -86,7 +86,7 @@ export const FACTIONS: Record<FactionId, FactionInfo> = {
   reconquete: {
     id: 'reconquete',
     name: 'Reconquête !',
-    shortName: 'Reconquête',
+    shortName: 'REC',
     ideology: 'Droite Identitaire',
     color: '#6366F1',
     accentColor: '#4338CA',
@@ -97,7 +97,7 @@ export const FACTIONS: Record<FactionId, FactionInfo> = {
   ecologistes: {
     id: 'ecologistes',
     name: 'Les Écologistes',
-    shortName: 'Les Verts',
+    shortName: 'EELV',
     ideology: 'Écologie Politique',
     color: '#16A34A',
     accentColor: '#15803D',
@@ -119,7 +119,7 @@ export const FACTIONS: Record<FactionId, FactionInfo> = {
   lutte_ouvriere_npa: {
     id: 'lutte_ouvriere_npa',
     name: 'Lutte Ouvrière / NPA',
-    shortName: 'LO / NPA',
+    shortName: 'LO',
     ideology: 'Extrême Gauche',
     color: '#991B1B',
     accentColor: '#7F1D1D',
@@ -130,7 +130,7 @@ export const FACTIONS: Record<FactionId, FactionInfo> = {
   souverainistes: {
     id: 'souverainistes',
     name: 'Souverainistes & Divers',
-    shortName: 'Souverainistes',
+    shortName: 'SOUV',
     ideology: 'Souverainisme',
     color: '#0284C7',
     accentColor: '#0369A1',
