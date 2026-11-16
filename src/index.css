@@ -4,10 +4,13 @@
 
 @layer base {
   body {
-    background-color: #F4F1EA;
-    color: #1A1A1A;
-    background-image: radial-gradient(rgba(26, 26, 26, 0.05) 1px, transparent 0);
-    background-size: 16px 16px;
+    background-color: #020617;
+    color: #F8FAFC;
+    height: 100dvh;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
   }
 }
 
